@@ -50,7 +50,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-6xl md:text-6xl lg:text-7xl font-bold text-[#F5F5F5] mb-6 leading-tight"
+          className="text-5xl md:text-6xl lg:text-7xl font-bold text-[#F5F5F5] mb-6 leading-tight"
         >
           The Central Hub for{" "}
           <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
@@ -75,11 +75,11 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-6 justify-center items-center"
         >
-          <button className="group bg-white text-black px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-3 hover:bg-gray-100">
+          <button className="group bg-white text-black px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-3 hover:bg-gray-100">
             Start a Campaign
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
-          <button className="group border border-white/20 hover:border-white/40 text-[#F5F5F5] px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/5">
+          <button className="group border border-white/20 hover:border-white/40 text-[#F5F5F5] px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/5">
             Onboard Your Screens
           </button>
         </motion.div>
@@ -715,10 +715,10 @@ const CTASection = () => {
           viewport={{ once: true }}
           className="flex flex-col sm:flex-row gap-6 justify-center items-center"
         >
-          <button className="group bg-white text-black px-10 py-5 rounded-full font-semibold text-xl transition-all duration-300 transform hover:scale-105 hover:bg-gray-100">
+          <button className="group bg-white text-black px-7 py-5 md:px-10 md:py-5 rounded-full font-semibold text-xl transition-all duration-300 transform hover:scale-105 hover:bg-gray-100">
             Launch Your Campaign
           </button>
-          <button className="group border border-white/20 hover:border-white/40 text-[#F5F5F5] px-10 py-5 rounded-full font-semibold text-xl transition-all duration-300 hover:bg-white/5">
+          <button className="group border border-white/20 hover:border-white/40 text-[#F5F5F5] px-6 py-5 md:px-10 md:py-5 rounded-full font-semibold text-xl transition-all duration-300 hover:bg-white/5">
             Grow Your Revenues
           </button>
         </motion.div>
