@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import React from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Combine,
@@ -19,12 +19,15 @@ import {
   Wallet,
   Users,
   Asterisk,
-} from "lucide-react";
+} from 'lucide-react';
 
 // Hero Section Component
 const HeroSection = () => {
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section
+      id="hero"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
+    >
       {/* Background with overlay */}
       <div className="absolute inset-0 bg-[#09080b]">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-transparent"></div>
@@ -36,7 +39,7 @@ const HeroSection = () => {
       {/* Billboard Image - Left Bottom Corner */}
       <div className="absolute bottom-5 left-5 hidden lg:block lg:w-3/12 max-w-lg z-0">
         <Image
-          src="/billboard-abstract.png"
+          src="/marketing/billboard-abstract.png"
           alt="Digital billboard screens in city"
           width={900}
           height={700}
@@ -52,10 +55,10 @@ const HeroSection = () => {
           transition={{ duration: 0.8 }}
           className="text-5xl md:text-6xl lg:text-7xl font-bold text-[#F5F5F5] mb-6 leading-tight"
         >
-          The Central Hub for{" "}
+          The Central Hub for{' '}
           <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
             Digital Out-of-Home
-          </span>{" "}
+          </span>{' '}
           Advertising
         </motion.h1>
 
@@ -91,10 +94,10 @@ const HeroSection = () => {
 // Problem Section Component
 const ProblemSection = () => {
   const problems = [
-    "Fragmented DOOH inventory makes it hard to plan at scale.",
-    "Manual booking processes waste time.",
-    "Advertisers lack real-time visibility into performance.",
-    "Media owners struggle with yield optimization and compliance.",
+    'Fragmented DOOH inventory makes it hard to plan at scale.',
+    'Manual booking processes waste time.',
+    'Advertisers lack real-time visibility into performance.',
+    'Media owners struggle with yield optimization and compliance.',
   ];
 
   return (
@@ -107,8 +110,7 @@ const ProblemSection = () => {
           viewport={{ once: true }}
           className="text-5xl md:text-6xl font-bold text-[#F5F5F5] text-center mb-16"
         >
-          The old way is{" "}
-          <span className="text-red-400">broken</span>.
+          The old way is <span className="text-red-400">broken</span>.
         </motion.h2>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -116,12 +118,14 @@ const ProblemSection = () => {
             <motion.div
               key={index}
               initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1}}
+              whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="p-8 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300"
             >
-              <p className="text-lg text-[#A3A3A3] leading-relaxed">{problem}</p>
+              <p className="text-lg text-[#A3A3A3] leading-relaxed">
+                {problem}
+              </p>
             </motion.div>
           ))}
         </div>
@@ -136,19 +140,19 @@ const SolutionSection = () => {
   const solutions = [
     {
       icon: Combine,
-      text: "One platform to connect advertisers and DOOH media owners.",
+      text: 'One platform to connect advertisers and DOOH media owners.',
     },
     {
       icon: Zap,
-      text: "Programmatic trading engine for instant booking & fair auctions.",
+      text: 'Programmatic trading engine for instant booking & fair auctions.',
     },
     {
       icon: BrainCircuit,
-      text: "AI-driven optimization for targeting and smarter placements.",
+      text: 'AI-driven optimization for targeting and smarter placements.',
     },
     {
       icon: ShieldCheck,
-      text: "Real-time proof of play for transparency and trust.",
+      text: 'Real-time proof of play for transparency and trust.',
     },
   ];
 
@@ -165,7 +169,7 @@ const SolutionSection = () => {
           viewport={{ once: true }}
           className="text-5xl md:text-6xl font-bold text-[#F5F5F5] text-center mb-16"
         >
-          Welcome to the{" "}
+          Welcome to the{' '}
           <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
             Future of DOOH
           </span>
@@ -176,8 +180,8 @@ const SolutionSection = () => {
           {solutions.map((solution, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0}}
-              whileInView={{ opacity: 1}}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="group p-8 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300"
@@ -197,19 +201,19 @@ const SolutionSection = () => {
 // For Advertisers Section Component
 const ForAdvertisersSection = () => {
   const features = [
-    { icon: Map, text: "Interactive map to explore available DOOH screens." },
+    { icon: Map, text: 'Interactive map to explore available DOOH screens.' },
     {
       icon: LayoutGrid,
-      text: "Smart campaign planner with drag-and-drop scheduling.",
+      text: 'Smart campaign planner with drag-and-drop scheduling.',
     },
     {
       icon: BrainCircuit,
-      text: "AI-enhanced targeting (Traffic, Weather, Audience Prediction).",
+      text: 'AI-enhanced targeting (Traffic, Weather, Audience Prediction).',
     },
-    { icon: BadgePercent, text: "Instant pricing & booking confirmation." },
+    { icon: BadgePercent, text: 'Instant pricing & booking confirmation.' },
     {
       icon: BarChart,
-      text: "Real-time performance analytics & ROI dashboard.",
+      text: 'Real-time performance analytics & ROI dashboard.',
     },
   ];
 
@@ -269,14 +273,14 @@ const ForAdvertisersSection = () => {
           >
             <div className="aspect-video rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-white/10 p-8 flex items-center justify-center">
               <div className="w-full h-full rounded-xl bg-gradient-to-br from-blue-500/5 to-purple-600/5 border border-white/5 flex items-center justify-center">
-              <Image
-                src="/map.png"
-                alt="adCentra.ai Dashboard - Real-time analytics and performance metrics"
-                fill
-                className="object-cover rounded-2xl"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                priority={false}
-              />
+                <Image
+                  src="/marketing/map.png"
+                  alt="adCentra Dashboard - Real-time analytics and performance metrics"
+                  fill
+                  className="object-cover rounded-2xl"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                  priority={false}
+                />
               </div>
             </div>
           </motion.div>
@@ -291,23 +295,23 @@ const ForMediaOwnersSection = () => {
   const features = [
     {
       icon: UploadCloud,
-      text: "Easy screen onboarding with GPS, specs, and pricing.",
+      text: 'Easy screen onboarding with GPS, specs, and pricing.',
     },
     {
       icon: TrendingUp,
-      text: "Dynamic pricing engine powered by AI yield optimization.",
+      text: 'Dynamic pricing engine powered by AI yield optimization.',
     },
     {
       icon: ClipboardCheck,
-      text: "Campaign approval workflows with compliance auto-check.",
+      text: 'Campaign approval workflows with compliance auto-check.',
     },
     {
       icon: Wallet,
-      text: "Earnings dashboard with real-time payout tracking.",
+      text: 'Earnings dashboard with real-time payout tracking.',
     },
     {
       icon: Users,
-      text: "Access to premium advertisers through a private marketplace.",
+      text: 'Access to premium advertisers through a private marketplace.',
     },
   ];
 
@@ -325,14 +329,14 @@ const ForMediaOwnersSection = () => {
           >
             <div className="aspect-video rounded-2xl bg-gradient-to-br from-purple-500/10 to-blue-600/10 border border-white/10 p-8 flex items-center justify-center">
               <div className="w-full h-full rounded-xl bg-gradient-to-br from-purple-500/5 to-blue-600/5 border border-white/5 flex items-center justify-center">
-              <Image
-                src="/inventory.png"
-                alt="adCentra.ai Dashboard - Real-time analytics and performance metrics"
-                fill
-                className="object-cover rounded-2xl"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                priority={false}
-              />
+                <Image
+                  src="/marketing/inventory.png"
+                  alt="adCentra Dashboard - Real-time analytics and performance metrics"
+                  fill
+                  className="object-cover rounded-2xl"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                  priority={false}
+                />
               </div>
             </div>
           </motion.div>
@@ -388,29 +392,31 @@ const ForMediaOwnersSection = () => {
 const HowItWorksSection = () => {
   const steps = [
     {
-      number: "1",
-      title: "Onboard",
-      description: "Media owners onboard their DOOH screens.",
+      number: '1',
+      title: 'Onboard',
+      description: 'Media owners onboard their DOOH screens.',
     },
     {
-      number: "2",
-      title: "Discover",
-      description: "Advertisers discover & book through auctions or direct buys.",
+      number: '2',
+      title: 'Discover',
+      description:
+        'Advertisers discover & book through auctions or direct buys.',
     },
     {
-      number: "3",
-      title: "Match",
-      description: "AI matches campaigns to best-fit slots (traffic, time, weather).",
+      number: '3',
+      title: 'Match',
+      description:
+        'AI matches campaigns to best-fit slots (traffic, time, weather).',
     },
     {
-      number: "4",
-      title: "Verify",
-      description: "Content is distributed & verified in real time.",
+      number: '4',
+      title: 'Verify',
+      description: 'Content is distributed & verified in real time.',
     },
     {
-      number: "5",
-      title: "Analyze",
-      description: "Proof of play & performance analytics close the loop.",
+      number: '5',
+      title: 'Analyze',
+      description: 'Proof of play & performance analytics close the loop.',
     },
   ];
 
@@ -469,33 +475,33 @@ const PlatformFeaturesSection = () => {
   const features = [
     {
       icon: Zap,
-      title: "Programmatic Trading Engine",
-      description: "OpenRTB-ready",
+      title: 'Programmatic Trading Engine',
+      description: 'OpenRTB-ready',
     },
     {
       icon: LayoutGrid,
-      title: "Multi-format CMS",
-      description: "Manage your creatives effortlessly",
+      title: 'Multi-format CMS',
+      description: 'Manage your creatives effortlessly',
     },
     {
       icon: ShieldCheck,
-      title: "Proof of Play",
-      description: "Hardware/software-based verification",
+      title: 'Proof of Play',
+      description: 'Hardware/software-based verification',
     },
     {
       icon: BrainCircuit,
-      title: "AI-Powered Optimization",
-      description: "Dynamic creative, predictive modeling, yield management",
+      title: 'AI-Powered Optimization',
+      description: 'Dynamic creative, predictive modeling, yield management',
     },
     {
       icon: ClipboardCheck,
-      title: "Compliance & License Automation",
-      description: "ASCI + State rules",
+      title: 'Compliance & License Automation',
+      description: 'ASCI + State rules',
     },
     {
       icon: Wallet,
-      title: "Escrow-based Payments",
-      description: "Secure & transparent billing",
+      title: 'Escrow-based Payments',
+      description: 'Secure & transparent billing',
     },
   ];
 
@@ -516,8 +522,8 @@ const PlatformFeaturesSection = () => {
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0}}
-              whileInView={{ opacity: 1}}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="group p-8 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
@@ -540,10 +546,10 @@ const PlatformFeaturesSection = () => {
 // Analytics Section Component
 const AnalyticsSection = () => {
   const analyticsFeatures = [
-    "Live campaign monitoring dashboard.",
-    "Heatmaps of ad exposure by time & geography.",
-    "Benchmark comparisons across campaigns.",
-    "ROI tracking per screen, per campaign.",
+    'Live campaign monitoring dashboard.',
+    'Heatmaps of ad exposure by time & geography.',
+    'Benchmark comparisons across campaigns.',
+    'ROI tracking per screen, per campaign.',
   ];
 
   return (
@@ -581,19 +587,19 @@ const AnalyticsSection = () => {
           <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-blue-500/5 to-purple-600/5">
             <div className="aspect-video w-full relative">
               <Image
-                src="/dashboard.png"
-                alt="adCentra.ai Dashboard - Real-time analytics and performance metrics"
+                src="/marketing/dashboard.png"
+                alt="adCentra Dashboard - Real-time analytics and performance metrics"
                 fill
                 className="object-cover rounded-2xl"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                 priority={false}
               />
             </div>
-            
+
             {/* Optional overlay for better presentation */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
           </div>
-          
+
           {/* Caption */}
           <motion.p
             initial={{ opacity: 0 }}
@@ -602,7 +608,8 @@ const AnalyticsSection = () => {
             viewport={{ once: true }}
             className="text-center text-[#A3A3A3] text-sm mt-4"
           >
-            Real-time analytics dashboard with comprehensive DOOH campaign insights
+            Real-time analytics dashboard with comprehensive DOOH campaign
+            insights
           </motion.p>
         </motion.div>
 
@@ -632,19 +639,19 @@ const WhyAdcentraSection = () => {
   const differentiators = [
     {
       title: "India's First",
-      description: "Standardized DOOH Marketplace.",
+      description: 'Standardized DOOH Marketplace.',
     },
     {
-      title: "Built for Trust",
-      description: "Proof of play + compliance.",
+      title: 'Built for Trust',
+      description: 'Proof of play + compliance.',
     },
     {
-      title: "Smarter with AI",
-      description: "Traffic, weather, and demographic intelligence.",
+      title: 'Smarter with AI',
+      description: 'Traffic, weather, and demographic intelligence.',
     },
     {
-      title: "Scalable",
-      description: "One campaign across 100s of screens, one-click.",
+      title: 'Scalable',
+      description: 'One campaign across 100s of screens, one-click.',
     },
   ];
 
@@ -658,9 +665,9 @@ const WhyAdcentraSection = () => {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl font-bold text-[#F5F5F5] text-center mb-20"
         >
-          Why{" "}
+          Why{' '}
           <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
-            adCentra.ai
+            adCentra
           </span>
           ?
         </motion.h2>
@@ -701,7 +708,7 @@ const CTASection = () => {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#F5F5F5] mb-12 leading-tight"
         >
-          Ready to Transform{" "}
+          Ready to Transform{' '}
           <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
             DOOH Advertising
           </span>
@@ -731,30 +738,30 @@ const CTASection = () => {
 const FooterSection = () => {
   const footerLinks = {
     product: [
-      { name: "For Advertisers", href: "#features" },
-      { name: "For Media Owners", href: "#features" },
-      { name: "Platform Features", href: "#features" },
-      { name: "Analytics", href: "#analytics" },
+      { name: 'For Advertisers', href: '#features' },
+      { name: 'For Media Owners', href: '#features' },
+      { name: 'Platform Features', href: '#features' },
+      { name: 'Analytics', href: '#analytics' },
     ],
     company: [
-      { name: "About Us", href: "#" },
-      { name: "Careers", href: "#" },
-      { name: "Blog", href: "#" },
-      { name: "Contact", href: "#cta" },
+      { name: 'About Us', href: '#' },
+      { name: 'Careers', href: '#' },
+      { name: 'Blog', href: '#' },
+      { name: 'Contact', href: '#cta' },
     ],
     resources: [
-      { name: "Help Center", href: "#" },
-      { name: "Privacy Policy", href: "#" },
-      { name: "Terms of Service", href: "#" },
-      { name: "DOOH Guide", href: "#" },
+      { name: 'Help Center', href: '#' },
+      { name: 'Privacy Policy', href: '#' },
+      { name: 'Terms of Service', href: '#' },
+      { name: 'DOOH Guide', href: '#' },
     ],
   };
 
   const scrollToSection = (sectionId: string) => {
-    if (sectionId.startsWith("#")) {
+    if (sectionId.startsWith('#')) {
       const element = document.getElementById(sectionId.slice(1));
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        element.scrollIntoView({ behavior: 'smooth' });
       }
     }
   };
@@ -768,13 +775,19 @@ const FooterSection = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-6">
               <span className="flex items-center gap-2 font-bold text-2xl">
-                <Asterisk className="w-6 h-6 pt-0.5" strokeWidth={3.5} />
-                adCentra.ai
+                <Image
+                  src="/marketing/logo.png"
+                  alt="adCentra"
+                  width={48}
+                  height={48}
+                />
+                adCentra
               </span>
             </div>
             <p className="text-[#A3A3A3] text-lg leading-relaxed mb-6 max-w-md">
-              India&apos;s first standardized DOOH marketplace. Connecting advertisers 
-              and media owners through AI-powered programmatic advertising.
+              India&apos;s first standardized DOOH marketplace. Connecting
+              advertisers and media owners through AI-powered programmatic
+              advertising.
             </p>
             <div className="flex items-center gap-4">
               <button className="bg-white text-black px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all duration-200 transform hover:scale-105">
@@ -785,9 +798,11 @@ const FooterSection = () => {
 
           {/* Product Links */}
           <div>
-            <h3 className="text-[#F5F5F5] font-semibold text-lg mb-6">Product</h3>
+            <h3 className="text-[#F5F5F5] font-semibold text-lg mb-6">
+              Product
+            </h3>
             <ul className="space-y-4">
-              {footerLinks.product.map((link) => (
+              {footerLinks.product.map(link => (
                 <li key={link.name}>
                   <button
                     onClick={() => scrollToSection(link.href)}
@@ -802,9 +817,11 @@ const FooterSection = () => {
 
           {/* Company Links */}
           <div>
-            <h3 className="text-[#F5F5F5] font-semibold text-lg mb-6">Company</h3>
+            <h3 className="text-[#F5F5F5] font-semibold text-lg mb-6">
+              Company
+            </h3>
             <ul className="space-y-4">
-              {footerLinks.company.map((link) => (
+              {footerLinks.company.map(link => (
                 <li key={link.name}>
                   <button
                     onClick={() => scrollToSection(link.href)}
@@ -819,9 +836,11 @@ const FooterSection = () => {
 
           {/* Resources Links */}
           <div>
-            <h3 className="text-[#F5F5F5] font-semibold text-lg mb-6">Resources</h3>
+            <h3 className="text-[#F5F5F5] font-semibold text-lg mb-6">
+              Resources
+            </h3>
             <ul className="space-y-4">
-              {footerLinks.resources.map((link) => (
+              {footerLinks.resources.map(link => (
                 <li key={link.name}>
                   <button
                     onClick={() => scrollToSection(link.href)}
@@ -840,10 +859,10 @@ const FooterSection = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-8">
               <p className="text-[#A3A3A3] text-sm">
-                © 2025 adCentra.ai. All rights reserved.
+                © 2025 adCentra. All rights reserved.
               </p>
             </div>
-            
+
             <div className="flex items-center gap-6">
               <span className="text-[#A3A3A3] text-sm">Made in India 🇮🇳</span>
             </div>
