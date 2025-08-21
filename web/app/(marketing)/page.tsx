@@ -18,7 +18,6 @@ import {
   ClipboardCheck,
   Wallet,
   Users,
-  Asterisk,
 } from 'lucide-react';
 
 // Hero Section Component
