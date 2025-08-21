@@ -142,7 +142,7 @@ const Navbar = () => {
         >
           <div className="bg-[#3f2d45]/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl mobile-menu-container">
             <div className="py-4">
-              {navItems.map((item, index) => (
+              {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}

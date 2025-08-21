@@ -773,7 +773,7 @@ const FooterSection = () => {
               </span>
             </div>
             <p className="text-[#A3A3A3] text-lg leading-relaxed mb-6 max-w-md">
-              India's first standardized DOOH marketplace. Connecting advertisers 
+              India&apos;s first standardized DOOH marketplace. Connecting advertisers 
               and media owners through AI-powered programmatic advertising.
             </p>
             <div className="flex items-center gap-4">
