@@ -1,0 +1,156 @@
+# Include variables from the .envrc file
+include .envrc
+
+
+# ==================================================================================== #
+# HELPERS
+# ==================================================================================== #
+
+## help: print this help message
+.PHONY: help
+help:
+	@echo 'Usage:'
+	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
+
+.PHONY: confirm
+confirm:
+	@echo -n 'Are you sure? [y/N] ' && read ans && [ $${ans:-N} = y ]
+
+
+# ==================================================================================== #
+# DEVELOPMENT
+# ==================================================================================== #
+
+## run/api: run the cmd/api application in development mode
+.PHONY: run/api
+run/api:
+	@echo 'Starting api server...'
+	cd server && go run ./cmd/api -dsn=${DB_DSN} -smtp-username=${SMTP_USERNAME} -smtp-password=${SMTP_PASSWORD}
+
+## db/migrations/version: check current database migration version
+.PHONY: db/migrations/version
+db/migrations/version:
+	goose -dir ./server/migrations postgres ${DB_DSN} version
+	
+## db/migrations/new name=$1: create a new database migration
+.PHONY: db/migrations/new
+db/migrations/new:
+	@echo 'Creating a migration file for ${name}'
+	goose -s -dir ./server/migrations create ${name} sql
+
+## db/migrations/up: apply all up database migrations
+.PHONY: db/migrations/up
+db/migrations/up: confirm
+	@echo 'Running up migrations...'
+	goose -dir ./server/migrations postgres ${DB_DSN} up
+
+## db/migrations/down: apply a down database migration
+.PHONY: db/migrations/down
+db/migrations/down: confirm
+	@echo 'Running down migrations...'
+	goose -dir ./server/migrations postgres ${DB_DSN} down
+
+
+# ==================================================================================== #
+# QUALITY CONTROL
+# ==================================================================================== #
+
+## tidy: format all .go files, and tidy and vendor module dependencies
+.PHONY: tidy
+tidy:
+	@echo 'Tidying and verifying module dependencies...'
+	cd server && go mod tidy
+	cd server && go mod verify
+	@echo 'Vendoring dependencies...'
+	cd server && go mod vendor
+	@echo 'Formatting .go files...'
+	cd server && go fmt ./...
+
+## audit: tidy dependencies and format, vet and test all code
+.PHONY: audit
+audit:
+	@echo 'Checking module dependencies...'
+	cd server && go mod tidy -diff
+	cd server && go mod verify
+	@echo 'Formatting code...'
+	cd server && go fmt ./...
+	@echo 'Vetting code...'
+	cd server && go vet ./...
+	cd server && go tool staticcheck ./...
+	@echo 'Running tests...'
+	cd server && go test -race -vet=off ./...
+
+
+# ==================================================================================== #
+# BUILD
+# ==================================================================================== #
+
+## build/api: build the cmd/api application for local machine and linux/amd64
+.PHONY: build/api
+build/api:
+	@echo 'Building cmd/api for local machine...'
+	cd server && go build -ldflags='-s -w' -o=./bin/local/api ./cmd/api
+	@echo 'Building cmd/api for deployment in linux/amd64...'
+	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/api ./cmd/api
+
+## build/tools: build the cmd/tools applications for local machine and linux/amd64
+.PHONY: build/tools
+build/tools:
+	@echo 'Building cmd/tools/makeadmin for local machine...'
+	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/makeadmin ./cmd/tools/makeadmin
+	@echo 'Building cmd/tools/makeadmin for deployment in linux/amd64...'
+	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/makeadmin ./cmd/tools/makeadmin
+	@echo 'Building cmd/tools/maketopics for local machine...'
+	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/maketopics ./cmd/tools/maketopics
+	@echo 'Building cmd/tools/maketopics for deployment in linux/amd64...'
+	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/maketopics ./cmd/tools/maketopics
+	@echo 'Building cmd/tools/createfeeds for local machine...'
+	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/createfeeds ./cmd/tools/createfeeds
+	@echo 'Building cmd/tools/createfeeds for deployment in linux/amd64...'
+	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/createfeeds ./cmd/tools/createfeeds
+
+# ==================================================================================== #
+# PRODUCTION
+# ==================================================================================== #
+
+production_host_ip ?= ${PROD_IP}
+
+## production/connect: connect to the production server
+.PHONY: production/connect
+production/connect:
+	@if [ -z "${PROD_IP}" ]; then \
+		echo "ERROR: PROD_IP is not set! Pass it like 'make production/connect PROD_IP=1.2.3.4' or set it as environment variable"; \
+		exit 1; \
+	fi
+	ssh adcentra@${production_host_ip}
+
+## production/deploy/api: deploy the api server to production
+.PHONY: production/deploy/api
+production/deploy/api:
+	@if [ -z "${PROD_IP}" ]; then \
+		echo "ERROR: PROD_IP is not set! Pass it like 'make production/deploy/api PROD_IP=1.2.3.4' or set it as environment variable"; \
+		exit 1; \
+	fi
+	@echo 'Deploying api server on production...'
+	rsync -P ./server/bin/linux_amd64/api adcentra@${production_host_ip}:~
+	rsync -rP --delete ./server/migrations adcentra@${production_host_ip}:~
+	rsync -P ./server/remote/production/api.service adcentra@${production_host_ip}:~
+	rsync -P ./server/remote/production/Caddyfile adcentra@${production_host_ip}:~
+	ssh -t adcentra@${production_host_ip} '\
+		goose -dir ~/migrations postgres $${DB_DSN} up \
+		&& sudo mv ~/api.service /etc/systemd/system/ \
+		&& sudo systemctl enable api \
+		&& sudo systemctl restart api \
+		&& sudo mv ~/Caddyfile /etc/caddy/ \
+		&& sudo systemctl reload caddy \
+	'
+
+## production/deploy/tools: deploy the tools to production
+.PHONY: production/deploy/tools
+production/deploy/tools:
+	@if [ -z "${PROD_IP}" ]; then \
+		echo "ERROR: PROD_IP is not set! Pass it like 'make production/deploy/api PROD_IP=1.2.3.4' or set it as environment variable"; \
+		exit 1; \
+	fi
+	@echo 'Deploying server tools on production...'
+	rsync -rP --delete ./server/bin/linux_amd64/tools adcentra@${production_host_ip}:~
