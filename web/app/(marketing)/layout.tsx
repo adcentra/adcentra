@@ -90,6 +90,7 @@ const Navbar = () => {
                     alt="adCentra"
                     width={48}
                     height={48}
+                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
                   />
                   <span className="mb-0 sm:mb-1">adCentra</span>
                 </span>
