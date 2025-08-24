@@ -1,0 +1,15 @@
+meta {
+  name: Debug vars
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5500/debug/vars
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

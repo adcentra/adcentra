@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,9 +16,8 @@ func (app *application) serve() error {
 		Addr:         fmt.Sprintf(":%d", app.config.port),
 		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		ErrorLog:     slog.NewLogLogger(app.logger.Handler(), slog.LevelInfo),
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 15 * time.Second,
 	}
 
 	shutdownError := make(chan error)
@@ -45,6 +43,9 @@ func (app *application) serve() error {
 		if err != nil {
 			shutdownError <- err
 		}
+
+		app.logger.Info("cancelling context for background tasks")
+		app.serverCtxCancel()
 
 		app.logger.Info("completing background tasks", "addr", srv.Addr)
 

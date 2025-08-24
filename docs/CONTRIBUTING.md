@@ -25,7 +25,7 @@ This project adheres to a code of conduct that we expect all contributors to fol
 
 Before you begin, ensure you have the following installed:
 
-- **Go 1.24+** - [Installation Guide](https://golang.org/dl/)
+- **Go 1.25+** - [Installation Guide](https://golang.org/dl/)
 - **Node 22+** - [Installation Guide](https://nodejs.org/en/download/)
 - **PostgreSQL 15+**
 - **Redis 7+**

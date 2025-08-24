@@ -2,17 +2,16 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
-func (app *application) healthcheck(w http.ResponseWriter, r *http.Request) {
+func (app *application) healthcheck(c echo.Context) error {
 	data := map[string]string{
 		"status":      "available",
 		"environment": app.config.env,
 		"version":     version,
 	}
 
-	err := app.writeJSON(w, http.StatusOK, envelope{"data": data}, nil)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-	}
+	return c.JSON(http.StatusOK, envelope{"data": data})
 }

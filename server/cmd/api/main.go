@@ -56,12 +56,14 @@ type config struct {
 }
 
 type application struct {
-	config config
-	logger *slog.Logger
-	models data.Models
-	cache  cache.Cache
-	mailer *mailer.Mailer
-	wg     sync.WaitGroup
+	config          config
+	logger          *slog.Logger
+	models          data.Models
+	cache           cache.Cache
+	mailer          *mailer.Mailer
+	wg              sync.WaitGroup
+	serverCtx       context.Context
+	serverCtxCancel context.CancelFunc
 }
 
 func main() {
@@ -70,10 +72,14 @@ func main() {
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
 
-	flag.StringVar(&cfg.db.dsn, "dsn", os.Getenv("ADCENTRA_DB_DSN"), "PostgreSQL connection string")
+	flag.StringVar(&cfg.db.dsn, "dsn", os.Getenv("DB_DSN"), "PostgreSQL connection string")
 	flag.IntVar(&cfg.db.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
 	flag.IntVar(&cfg.db.maxIdleConns, "db-max-idle-conns", 25, "PostgreSQL max idle connections")
 	flag.DurationVar(&cfg.db.maxIdleTime, "db-max-idle-time", 15*time.Minute, "PostgreSQL max connection idle time (default: 15m)")
+
+	flag.StringVar(&cfg.redis.dsn, "redis-dsn", os.Getenv("REDIS_DSN"), "Redis connection string")
+	flag.IntVar(&cfg.redis.db, "redis-db", 0, "Redis database number")
+	flag.IntVar(&cfg.redis.poolSize, "redis-pool-size", 10, "Redis connection pool size")
 
 	flag.StringVar(&cfg.smtp.host, "smtp-host", "sandbox.smtp.mailtrap.io", "SMTP host")
 	flag.IntVar(&cfg.smtp.port, "smtp-port", 2525, "SMTP port")
@@ -104,7 +110,7 @@ func main() {
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	db, err := openDB(cfg)
+	db, err := intiDB(cfg)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -153,6 +159,9 @@ func main() {
 		mailer: mailer,
 	}
 
+	// Create a new context for background goroutines which is cancelled on graceful shutdown.
+	app.serverCtx, app.serverCtxCancel = context.WithCancel(context.Background())
+
 	err = app.serve()
 	if err != nil {
 		logger.Error(err.Error())
@@ -160,7 +169,7 @@ func main() {
 	}
 }
 
-func openDB(cfg config) (*pgxpool.Pool, error) {
+func intiDB(cfg config) (*pgxpool.Pool, error) {
 	poolConfig, err := pgxpool.ParseConfig(cfg.db.dsn)
 	if err != nil {
 		return nil, err
