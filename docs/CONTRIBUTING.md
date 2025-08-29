@@ -304,7 +304,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 - `feat`: New feature
 - `fix`: Bug fix
-- `docs`: Documentation changes
+- `docs`: Documentation changes or adding bruno API endpoints
 - `style`: Code style changes (formatting, etc.)
 - `refactor`: Code refactoring
 - `test`: Adding or updating tests

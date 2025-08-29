@@ -1,0 +1,21 @@
+meta {
+  name: Activate User
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:5500/v1/users/activate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "token": "YVZJXWYTDFNMAIZ4K4U27GQB5I"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

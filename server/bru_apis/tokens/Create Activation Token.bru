@@ -1,0 +1,21 @@
+meta {
+  name: Create Activation Token
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:5500/v1/tokens/activation
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "abcd@gmail.com"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

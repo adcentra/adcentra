@@ -1,0 +1,22 @@
+meta {
+  name: Login
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:5500/v1/tokens/authentication
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username_or_email": "araaavind",
+    "password": "P@ssw0rd"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

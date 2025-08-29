@@ -1,0 +1,23 @@
+meta {
+  name: Logout
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:5500/v1/tokens/authentication?scope=local
+  body: none
+  auth: inherit
+}
+
+params:query {
+  scope: local
+}
+
+headers {
+  Authorization: Bearer OF5SQULI4QEZRC5UEG42XLMAXZ
+}
+
+settings {
+  encodeUrl: true
+}
