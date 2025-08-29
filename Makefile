@@ -1,5 +1,5 @@
 # Include variables from the .envrc file
-include .envrc
+include server/.envrc
 
 
 # ==================================================================================== #
@@ -30,26 +30,31 @@ run/api:
 ## db/migrations/version: check current database migration version
 .PHONY: db/migrations/version
 db/migrations/version:
-	goose -dir ./server/migrations postgres ${DB_DSN} version
+	goose -dir ./server/internal/db/migrations postgres ${DB_DSN} version
 	
 ## db/migrations/new name=$1: create a new database migration
 .PHONY: db/migrations/new
 db/migrations/new:
 	@echo 'Creating a migration file for ${name}'
-	goose -s -dir ./server/migrations create ${name} sql
+	goose -s -dir ./server/internal/db/migrations create ${name} sql
 
 ## db/migrations/up: apply all up database migrations
 .PHONY: db/migrations/up
 db/migrations/up: confirm
 	@echo 'Running up migrations...'
-	goose -dir ./server/migrations postgres ${DB_DSN} up
+	goose -dir ./server/internal/db/migrations postgres ${DB_DSN} up
 
 ## db/migrations/down: apply a down database migration
 .PHONY: db/migrations/down
 db/migrations/down: confirm
 	@echo 'Running down migrations...'
-	goose -dir ./server/migrations postgres ${DB_DSN} down
+	goose -dir ./server/internal/db/migrations postgres ${DB_DSN} down
 
+## db/sqlc/generate: generate sqlc go code
+.PHONY: db/sqlc/generate
+db/sqlc/generate:
+	@echo 'Generating go code...'
+	cd server && sqlc generate
 
 # ==================================================================================== #
 # QUALITY CONTROL
@@ -96,18 +101,14 @@ build/api:
 ## build/tools: build the cmd/tools applications for local machine and linux/amd64
 .PHONY: build/tools
 build/tools:
-	@echo 'Building cmd/tools/makeadmin for local machine...'
-	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/makeadmin ./cmd/tools/makeadmin
-	@echo 'Building cmd/tools/makeadmin for deployment in linux/amd64...'
-	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/makeadmin ./cmd/tools/makeadmin
-	@echo 'Building cmd/tools/maketopics for local machine...'
-	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/maketopics ./cmd/tools/maketopics
-	@echo 'Building cmd/tools/maketopics for deployment in linux/amd64...'
-	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/maketopics ./cmd/tools/maketopics
-	@echo 'Building cmd/tools/createfeeds for local machine...'
-	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/createfeeds ./cmd/tools/createfeeds
-	@echo 'Building cmd/tools/createfeeds for deployment in linux/amd64...'
-	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/createfeeds ./cmd/tools/createfeeds
+	@echo 'Building cmd/tools/makesuperadmin for local machine...'
+	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/makesuperadmin ./cmd/tools/makesuperadmin
+	@echo 'Building cmd/tools/makesuperadmin for deployment in linux/amd64...'
+	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/makesuperadmin ./cmd/tools/makesuperadmin
+	@echo 'Building cmd/tools/updatedefaults for local machine...'
+	cd server && go build -ldflags='-s -w' -o=./bin/local/tools/updatedefaults ./cmd/tools/updatedefaults
+	@echo 'Building cmd/tools/updatedefaults for deployment in linux/amd64...'
+	cd server && GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o=./bin/linux_amd64/tools/updatedefaults ./cmd/tools/updatedefaults
 
 # ==================================================================================== #
 # PRODUCTION
@@ -133,7 +134,7 @@ production/deploy/api:
 	fi
 	@echo 'Deploying api server on production...'
 	rsync -P ./server/bin/linux_amd64/api adcentra@${production_host_ip}:~
-	rsync -rP --delete ./server/migrations adcentra@${production_host_ip}:~
+	rsync -rP --delete ./server/internal/db/migrations adcentra@${production_host_ip}:~
 	rsync -P ./server/remote/production/api.service adcentra@${production_host_ip}:~
 	rsync -P ./server/remote/production/Caddyfile adcentra@${production_host_ip}:~
 	ssh -t adcentra@${production_host_ip} '\

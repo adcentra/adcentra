@@ -53,6 +53,9 @@ type config struct {
 	cors struct {
 		trustedOrigins []string
 	}
+	cleanup struct {
+		tokensCleanupPeriod time.Duration
+	}
 }
 
 type application struct {
@@ -99,6 +102,8 @@ func main() {
 		return nil
 	})
 
+	flag.DurationVar(&cfg.cleanup.tokensCleanupPeriod, "tokens-cleanup-period", time.Hour*12, "Tokens cleanup period (default: 12h)")
+
 	flag.Parse()
 
 	// If the version flag value is true, then print out the version number and
@@ -110,23 +115,23 @@ func main() {
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	db, err := intiDB(cfg)
+	pool, err := intiDB(cfg)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
-	defer db.Close()
+	defer pool.Close()
 
 	logger.Info("database connection pool established")
 
 	rdb, err := initRedis(cfg)
 	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
+		logger.Warn("Failed to connect to Redis, continuing without cache", "error", err.Error())
+		rdb = nil
+	} else {
+		defer rdb.Close()
+		logger.Info("redis connection pool established")
 	}
-	defer rdb.Close()
-
-	logger.Info("redis connection pool established")
 
 	expvar.NewString("version").Set(version)
 	expvar.Publish("goroutines", expvar.Func(func() any {
@@ -134,11 +139,14 @@ func main() {
 	}))
 
 	expvar.Publish("database", expvar.Func(func() any {
-		return db.Stat()
+		return pool.Stat()
 	}))
 
 	expvar.Publish("redis", expvar.Func(func() any {
-		return rdb.PoolStats()
+		if rdb != nil {
+			return rdb.PoolStats()
+		}
+		return map[string]string{"status": "unavailable"}
 	}))
 
 	expvar.Publish("timestamp", expvar.Func(func() any {
@@ -151,11 +159,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Initialize cache with graceful degradation
+	var cacheInstance cache.Cache
+	if rdb != nil {
+		cacheInstance = cache.NewRedisCache(rdb)
+	} else {
+		logger.Warn("Redis unavailable, running without cache")
+		cacheInstance = cache.NewNullCache()
+	}
+
 	app := &application{
 		config: cfg,
 		logger: logger,
-		models: data.NewModels(db),
-		cache:  cache.NewRedisCache(rdb),
+		models: data.NewModels(pool, cacheInstance),
+		cache:  cacheInstance,
 		mailer: mailer,
 	}
 
@@ -181,18 +198,18 @@ func intiDB(cfg config) (*pgxpool.Pool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	db, err := pgxpool.NewWithConfig(ctx, poolConfig)
+	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Ping(ctx)
+	err = pool.Ping(ctx)
 	if err != nil {
-		defer db.Close()
+		defer pool.Close()
 		return nil, err
 	}
 
-	return db, nil
+	return pool, nil
 }
 
 func initRedis(cfg config) (*redis.Client, error) {

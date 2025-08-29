@@ -13,5 +13,5 @@ func (app *application) healthcheck(c echo.Context) error {
 		"version":     version,
 	}
 
-	return c.JSON(http.StatusOK, envelope{"data": data})
+	return c.JSON(http.StatusOK, echo.Map{"data": data})
 }

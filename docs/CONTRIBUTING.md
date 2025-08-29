@@ -37,6 +37,7 @@ Before you begin, ensure you have the following installed:
 **Required:**
 
 - `goose` - Database migration tool: `go install github.com/pressly/goose/v3/cmd/goose@latest`
+- `sqlc` - SQL to type-safe go code generation tool: `https://docs.sqlc.dev/en/stable/overview/install.html`
 
 **Recommended:**
 
@@ -261,6 +262,12 @@ npm run lint
 - Use meaningful names for components and functions
 
 ## 🔧 Making Changes
+
+### SQLC Code gen
+
+After adding/modifying sql queries for models, make sure to run the following command to generate type-safe go code for the query functions:
+
+`sqlc generate`
 
 ### Branching Strategy
 
