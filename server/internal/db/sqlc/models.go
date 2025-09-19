@@ -41,7 +41,6 @@ type Token struct {
 type User struct {
 	ID              int64
 	FullName        string
-	Username        string
 	Email           string
 	PasswordHash    []byte
 	ProfileImageUrl pgtype.Text

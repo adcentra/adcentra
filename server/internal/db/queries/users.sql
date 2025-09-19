@@ -1,6 +1,6 @@
 -- name: InsertUser :one
-INSERT INTO users (full_name, username, email, profile_image_url, password_hash, activated)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO users (full_name, email, profile_image_url, password_hash, activated)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
 -- name: GetUserByID :one
@@ -15,12 +15,6 @@ FROM users
 WHERE email = $1
 LIMIT 1;
 
--- name: GetUserByUsername :one
-SELECT *
-FROM users
-WHERE username = $1
-LIMIT 1;
-
 -- name: GetUserForToken :one
 SELECT users.*
 FROM users
@@ -29,14 +23,9 @@ WHERE tokens.hash = $1
 AND tokens.scope = $2
 AND tokens.expiry > sqlc.arg(expiry_greater_than);
 
--- name: HasUsername :one
-SELECT count(1) > 0
-FROM users
-WHERE username = $1;
-
 -- name: Update :one
 UPDATE users 
-SET full_name = $1, username = $2, email = $3, profile_image_url = $4, password_hash = $5, activated = $6, updated_at = $7,
-last_login_at = $8, version = version + 1
-WHERE id = $9 AND version = $10
+SET full_name = $1, email = $2, profile_image_url = $3, password_hash = $4, activated = $5, updated_at = $6,
+last_login_at = $7, version = version + 1
+WHERE id = $8 AND version = $9
 RETURNING version;

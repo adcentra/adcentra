@@ -3,7 +3,6 @@
 CREATE TABLE IF NOT EXISTS users (
     id bigserial PRIMARY KEY,
     full_name text NOT NULL,
-    username citext UNIQUE NOT NULL,
     email citext UNIQUE NOT NULL,
     password_hash bytea NOT NULL,
     profile_image_url text,
@@ -15,14 +14,12 @@ CREATE TABLE IF NOT EXISTS users (
 );
 CREATE INDEX IF NOT EXISTS users_id_idx ON users(id);
 CREATE INDEX IF NOT EXISTS users_full_name_idx ON users(full_name);
-CREATE INDEX IF NOT EXISTS users_username_idx ON users(username);
 CREATE INDEX IF NOT EXISTS users_email_idx ON users(email);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP INDEX IF EXISTS users_email_idx;
-DROP INDEX IF EXISTS users_username_idx;
 DROP INDEX IF EXISTS users_full_name_idx;
 DROP INDEX IF EXISTS users_id_idx;
 DROP TABLE IF EXISTS users;

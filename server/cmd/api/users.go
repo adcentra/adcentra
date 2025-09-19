@@ -17,7 +17,6 @@ func (app *application) registerUser(e echo.Context) error {
 
 	var input struct {
 		FullName string `json:"full_name"`
-		Username string `json:"username"`
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
@@ -28,7 +27,6 @@ func (app *application) registerUser(e echo.Context) error {
 
 	user := &data.User{
 		FullName:  input.FullName,
-		Username:  input.Username,
 		Email:     input.Email,
 		Activated: false,
 	}
@@ -49,9 +47,6 @@ func (app *application) registerUser(e echo.Context) error {
 		case errors.Is(err, data.ErrDuplicateEmail):
 			v.AddError("email", "A user with this email already exists")
 			return app.failedValidationResponse(v.Errors)
-		case errors.Is(err, data.ErrDuplicateUsername):
-			v.AddError("username", "A user with this username already exists")
-			return app.failedValidationResponse(v.Errors)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -65,7 +60,7 @@ func (app *application) registerUser(e echo.Context) error {
 	app.background(func() {
 		data := map[string]any{
 			"activationToken": token.Plaintext,
-			"username":        user.Username,
+			"fullName":        user.FullName,
 		}
 		err = app.mailer.Send(user.Email, "user_welcome.tmpl", data)
 		if err != nil {
@@ -136,29 +131,6 @@ func (app *application) getCurrentUser(e echo.Context) error {
 	return e.JSON(http.StatusOK, echo.Map{
 		"user": session.User,
 	})
-}
-
-func (app *application) checkUsername(e echo.Context) error {
-	ctx, cancel := context.WithTimeout(e.Request().Context(), 3*time.Second)
-	defer cancel()
-
-	username := e.Param("username")
-
-	v := validator.New()
-
-	if data.ValidateUsername(v, username); !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
-	}
-
-	has, err := app.models.Users.HasUsername(ctx, username)
-	if err != nil {
-		return app.serverErrorResponse(e, err)
-	}
-
-	if has {
-		return e.NoContent(http.StatusOK)
-	}
-	return e.NoContent(http.StatusNotFound)
 }
 
 func (app *application) updateUserPassword(e echo.Context) error {

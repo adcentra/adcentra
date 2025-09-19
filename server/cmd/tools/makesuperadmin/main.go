@@ -15,15 +15,15 @@ import (
 
 func main() {
 	var (
-		dsn      = flag.String("dsn", os.Getenv("DB_DSN"), "PostgreSQL connection string")
-		username = flag.String("username", "", "Username of the user to make superadmin")
-		revoke   = flag.Bool("revoke", false, "Flag to revoke superadmin permissions")
+		dsn    = flag.String("dsn", os.Getenv("DB_DSN"), "PostgreSQL connection string")
+		email  = flag.String("email", "", "Email of the user to make superadmin")
+		revoke = flag.Bool("revoke", false, "Flag to revoke superadmin permissions")
 	)
 
 	flag.Parse()
 
-	if *username == "" {
-		log.Fatal("Error: username is required")
+	if *email == "" {
+		log.Fatal("Error: email is required")
 	}
 
 	pool, err := openDB(*dsn)
@@ -37,10 +37,10 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	user, err := models.Users.GetByUsername(ctx, *username)
+	user, err := models.Users.GetByEmail(ctx, *email)
 	if err != nil {
 		if errors.Is(err, data.ErrRecordNotFound) {
-			log.Fatalf("Error: user %s not found", *username)
+			log.Fatalf("Error: user %s not found", *email)
 		}
 		log.Fatalf("Error: %s", err)
 	}
@@ -61,22 +61,22 @@ func main() {
 		err = models.Roles.RemoveForUser(ctx, user.ID, data.Roles{data.RoleSuperAdmin})
 		if err != nil {
 			if errors.Is(err, data.ErrRecordNotFound) {
-				log.Fatalf("Error: user %s does not have superadmin privileges", *username)
+				log.Fatalf("Error: user %s does not have superadmin privileges", *email)
 			}
 			log.Fatalf("Error: %s", err)
 		}
 
-		fmt.Printf("Successfully revoked superadmin privileges from user: %s\n", *username)
+		fmt.Printf("Successfully revoked superadmin privileges from user: %s\n", *email)
 	} else {
 		err = models.Roles.AddForUser(ctx, user.ID, data.Roles{data.RoleSuperAdmin})
 		if err != nil {
 			if errors.Is(err, data.ErrUniqueConstraint) {
-				log.Fatalf("Error: user %s already has superadmin privileges", *username)
+				log.Fatalf("Error: user %s already has superadmin privileges", *email)
 			}
 			log.Fatalf("Error: %s", err)
 		}
 
-		fmt.Printf("Successfully granted superadmin privileges to user: %s\n", *username)
+		fmt.Printf("Successfully granted superadmin privileges to user: %s\n", *email)
 	}
 }
 

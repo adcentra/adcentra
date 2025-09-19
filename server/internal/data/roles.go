@@ -133,7 +133,7 @@ func (m RoleModel) RemoveForUser(ctx context.Context, userID int64, roles Roles)
 
 func (m RoleModel) ListUsersWithRole(ctx context.Context, role Role, filters Filters) ([]*User, Metadata, error) {
 	query := fmt.Sprintf(`
-		SELECT COUNT(*) OVER(), u.id, u.created_at, u.updated_at, u.full_name, u.username, u.email
+		SELECT COUNT(*) OVER(), u.id, u.created_at, u.updated_at, u.full_name, u.email
 		FROM users u
 		INNER JOIN user_roles ur ON u.id = ur.user_id
 		INNER JOIN roles r ON ur.role_id = r.id
@@ -158,7 +158,6 @@ func (m RoleModel) ListUsersWithRole(ctx context.Context, role Role, filters Fil
 			&user.CreatedAt,
 			&user.UpdatedAt,
 			&user.FullName,
-			&user.Username,
 			&user.Email,
 		)
 		if err != nil {

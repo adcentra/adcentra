@@ -28,30 +28,17 @@ func (app *application) createAuthenticationToken(e echo.Context) error {
 	defer cancel()
 
 	var input struct {
-		UsernameOrEmail string `json:"username_or_email"`
-		Password        string `json:"password"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	if err := e.Bind(&input); err != nil {
 		return app.badRequestResponse(err)
 	}
 
-	var isInputEmail bool
 	v := validator.New()
 
-	if validator.Matches(input.UsernameOrEmail, validator.EmailRX) {
-		data.ValidateEmail(v, input.UsernameOrEmail)
-		isInputEmail = true
-	} else if validator.Matches(input.UsernameOrEmail, validator.UsernameBasicRX) {
-		data.ValidateUsername(v, input.UsernameOrEmail)
-		isInputEmail = false
-	} else {
-		if !validator.NotBlank(input.UsernameOrEmail) {
-			v.AddError("username_or_email", "Username or email must be provided")
-		} else {
-			v.AddError("username_or_email", "Invalid username or email")
-		}
-	}
+	data.ValidateEmail(v, input.Email)
 	v.Check(validator.NotBlank(input.Password), "password", "Password must be provided")
 
 	if !v.Valid() {
@@ -61,15 +48,11 @@ func (app *application) createAuthenticationToken(e echo.Context) error {
 	var user *data.User
 	var err error
 	var authSuccess bool
-	if isInputEmail {
-		user, err = app.models.Users.GetByEmail(ctx, input.UsernameOrEmail)
-	} else {
-		user, err = app.models.Users.GetByUsername(ctx, input.UsernameOrEmail)
-	}
+	user, err = app.models.Users.GetByEmail(ctx, input.Email)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			// If the user does not exist, run a dummy match to prevent timing attacks on username/email.
+			// If the user does not exist, run a dummy match to prevent timing attacks on email.
 			user = &data.User{}
 			user.Password.DummyMatches(input.Password)
 			authSuccess = false
@@ -224,7 +207,7 @@ func (app *application) createActivationToken(e echo.Context) error {
 	app.background(func() {
 		data := map[string]any{
 			"activationToken": token.Plaintext,
-			"username":        user.Username,
+			"fullName":        user.FullName,
 		}
 
 		err = app.mailer.Send(user.Email, "activation_token.tmpl", data)

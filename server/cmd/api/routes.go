@@ -26,8 +26,10 @@ func (app *application) routes() *echo.Echo {
 		ReferrerPolicy:        "no-referrer",         // Hide referrer data
 	}))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: app.config.cors.trustedOrigins,
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType},
+		AllowOrigins:     app.config.cors.trustedOrigins,
+		AllowMethods:     []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE, echo.OPTIONS},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAuthorization},
+		AllowCredentials: true,
 	}))
 	if app.config.limiter.enabled {
 		e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStoreWithConfig(
@@ -47,7 +49,6 @@ func (app *application) routes() *echo.Echo {
 	g.POST("/users", app.registerUser)
 	g.PUT("/users/activate", app.activateUser)
 	g.PUT("/users/password", app.updateUserPassword)
-	g.HEAD("/users/:username", app.checkUsername)
 
 	g.POST("/tokens/authentication", app.createAuthenticationToken)
 	g.POST("/tokens/refresh", app.refreshAuthenticationToken).Name = "refresh-token"

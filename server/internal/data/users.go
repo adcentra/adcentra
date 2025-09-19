@@ -19,8 +19,7 @@ import (
 )
 
 var (
-	ErrDuplicateEmail    = errors.New("duplicate email")
-	ErrDuplicateUsername = errors.New("duplicate username")
+	ErrDuplicateEmail = errors.New("duplicate email")
 )
 
 type User struct {
@@ -28,7 +27,6 @@ type User struct {
 
 	ID              int64              `json:"id"`
 	FullName        string             `json:"full_name"`
-	Username        string             `json:"username"`
 	Email           string             `json:"email,omitzero"`
 	ProfileImageURL pgtype.Text        `json:"profile_image_url,omitzero"`
 	Password        password           `json:"-"`
@@ -45,7 +43,6 @@ func (user *User) fromSQLCUser(u sqlc.User) {
 		},
 		ID:              u.ID,
 		FullName:        u.FullName,
-		Username:        u.Username,
 		Email:           u.Email,
 		Password:        password{hash: u.PasswordHash},
 		ProfileImageURL: u.ProfileImageUrl,
@@ -99,38 +96,6 @@ func (p *password) DummyMatches(plaintextPassword string) {
 	bcrypt.CompareHashAndPassword(p.hash, []byte(plaintextPassword))
 }
 
-func ValidateUsername(v *validator.Validator, username string) {
-	v.Check(validator.NotBlank(username), "username", "Username must be provided")
-	v.Check(validator.MinChars(username, 8), "username", "Username must be atleast 8 characters long")
-	v.Check(validator.MaxChars(username, 16), "username", "Username must not be more than 16 characters long")
-	v.Check(
-		validator.Matches(username, validator.UsernameBasicRX),
-		"username",
-		`Username must contain only alphanumeric characters, dots and dashes`,
-	)
-
-	forbiddenPrefixes := []string{".", "_"}
-	v.Check(
-		validator.SafePrefix(username, forbiddenPrefixes...),
-		"username",
-		`Username must not start with "." or "_"`,
-	)
-
-	forbiddenSuffixes := []string{".", "_"}
-	v.Check(
-		validator.SafeSuffix(username, forbiddenSuffixes...),
-		"username",
-		`Username must not end with "." or "_"`,
-	)
-
-	forbiddenSubstrings := []string{"..", "__", "._", "_."}
-	v.Check(
-		validator.SafeSubstrings(username, forbiddenSubstrings...),
-		"username",
-		`Username must not contain consecutive "." or "_" or a combination of those`,
-	)
-}
-
 func ValidateEmail(v *validator.Validator, email string) {
 	v.Check(validator.NotBlank(email), "email", "Email must be provided")
 	v.Check(validator.Matches(email, validator.EmailRX), "email", "Email must be a valid email address")
@@ -150,7 +115,6 @@ func ValidateUser(v *validator.Validator, user *User) {
 	v.Check(validator.NotBlank(user.FullName), "full_name", "Full name must be provided")
 	v.Check(validator.MaxChars(user.FullName, 32), "full_name", "Full name must not be more than 32 characters long")
 
-	ValidateUsername(v, user.Username)
 	ValidateEmail(v, user.Email)
 
 	if user.Password.plaintext != nil {
@@ -181,7 +145,6 @@ type UserModel struct {
 func (m UserModel) Insert(ctx context.Context, user *User) error {
 	insertedUser, err := m.queries.InsertUser(ctx, sqlc.InsertUserParams{
 		FullName:        user.FullName,
-		Username:        user.Username,
 		Email:           user.Email,
 		ProfileImageUrl: user.ProfileImageURL,
 		PasswordHash:    user.Password.hash,
@@ -192,8 +155,6 @@ func (m UserModel) Insert(ctx context.Context, user *User) error {
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == strconv.Itoa(23505) && strings.Contains(pgErr.ConstraintName, "users_email_key") {
 				return ErrDuplicateEmail
-			} else if pgErr.Code == strconv.Itoa(23505) && strings.Contains(pgErr.ConstraintName, "users_username_key") {
-				return ErrDuplicateUsername
 			}
 		}
 		return err
@@ -240,23 +201,6 @@ func (m UserModel) GetByEmail(ctx context.Context, email string) (*User, error) 
 	return &user, nil
 }
 
-func (m UserModel) GetByUsername(ctx context.Context, username string) (*User, error) {
-	u, err := m.queries.GetUserByUsername(ctx, username)
-
-	if err != nil {
-		switch {
-		case errors.Is(err, pgx.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	var user User
-	user.fromSQLCUser(u)
-	return &user, nil
-}
-
 func (m UserModel) GetForToken(ctx context.Context, scope, tokenPlaintext string) (*User, error) {
 	tokenHash := sha256.Sum256([]byte(tokenPlaintext))
 
@@ -279,14 +223,9 @@ func (m UserModel) GetForToken(ctx context.Context, scope, tokenPlaintext string
 	return &user, nil
 }
 
-func (m UserModel) HasUsername(ctx context.Context, username string) (bool, error) {
-	return m.queries.HasUsername(ctx, username)
-}
-
 func (m UserModel) Update(ctx context.Context, user *User) error {
 	version, err := m.queries.Update(ctx, sqlc.UpdateParams{
 		FullName:        user.FullName,
-		Username:        user.Username,
 		Email:           user.Email,
 		ProfileImageUrl: user.ProfileImageURL,
 		PasswordHash:    user.Password.hash,
@@ -301,8 +240,6 @@ func (m UserModel) Update(ctx context.Context, user *User) error {
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == strconv.Itoa(23505) && strings.Contains(pgErr.ConstraintName, "users_email_key") {
 				return ErrDuplicateEmail
-			} else if pgErr.Code == strconv.Itoa(23505) && strings.Contains(pgErr.ConstraintName, "users_username_key") {
-				return ErrDuplicateUsername
 			}
 		} else if errors.Is(err, pgx.ErrNoRows) {
 			return ErrEditConflict

@@ -12,7 +12,7 @@ import (
 )
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, full_name, username, email, password_hash, profile_image_url, activated, last_login_at, version, created_at, updated_at
+SELECT id, full_name, email, password_hash, profile_image_url, activated, last_login_at, version, created_at, updated_at
 FROM users
 WHERE email = $1
 LIMIT 1
@@ -24,7 +24,6 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.Username,
 		&i.Email,
 		&i.PasswordHash,
 		&i.ProfileImageUrl,
@@ -38,7 +37,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, full_name, username, email, password_hash, profile_image_url, activated, last_login_at, version, created_at, updated_at
+SELECT id, full_name, email, password_hash, profile_image_url, activated, last_login_at, version, created_at, updated_at
 FROM users
 WHERE id = $1
 LIMIT 1
@@ -50,33 +49,6 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.Username,
-		&i.Email,
-		&i.PasswordHash,
-		&i.ProfileImageUrl,
-		&i.Activated,
-		&i.LastLoginAt,
-		&i.Version,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, full_name, username, email, password_hash, profile_image_url, activated, last_login_at, version, created_at, updated_at
-FROM users
-WHERE username = $1
-LIMIT 1
-`
-
-func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByUsername, username)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.FullName,
-		&i.Username,
 		&i.Email,
 		&i.PasswordHash,
 		&i.ProfileImageUrl,
@@ -90,7 +62,7 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 }
 
 const getUserForToken = `-- name: GetUserForToken :one
-SELECT users.id, users.full_name, users.username, users.email, users.password_hash, users.profile_image_url, users.activated, users.last_login_at, users.version, users.created_at, users.updated_at
+SELECT users.id, users.full_name, users.email, users.password_hash, users.profile_image_url, users.activated, users.last_login_at, users.version, users.created_at, users.updated_at
 FROM users
 INNER JOIN tokens ON users.id = tokens.user_id
 WHERE tokens.hash = $1
@@ -110,7 +82,6 @@ func (q *Queries) GetUserForToken(ctx context.Context, arg GetUserForTokenParams
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.Username,
 		&i.Email,
 		&i.PasswordHash,
 		&i.ProfileImageUrl,
@@ -123,28 +94,14 @@ func (q *Queries) GetUserForToken(ctx context.Context, arg GetUserForTokenParams
 	return i, err
 }
 
-const hasUsername = `-- name: HasUsername :one
-SELECT count(1) > 0
-FROM users
-WHERE username = $1
-`
-
-func (q *Queries) HasUsername(ctx context.Context, username string) (bool, error) {
-	row := q.db.QueryRow(ctx, hasUsername, username)
-	var column_1 bool
-	err := row.Scan(&column_1)
-	return column_1, err
-}
-
 const insertUser = `-- name: InsertUser :one
-INSERT INTO users (full_name, username, email, profile_image_url, password_hash, activated)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, full_name, username, email, password_hash, profile_image_url, activated, last_login_at, version, created_at, updated_at
+INSERT INTO users (full_name, email, profile_image_url, password_hash, activated)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, full_name, email, password_hash, profile_image_url, activated, last_login_at, version, created_at, updated_at
 `
 
 type InsertUserParams struct {
 	FullName        string
-	Username        string
 	Email           string
 	ProfileImageUrl pgtype.Text
 	PasswordHash    []byte
@@ -154,7 +111,6 @@ type InsertUserParams struct {
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, insertUser,
 		arg.FullName,
-		arg.Username,
 		arg.Email,
 		arg.ProfileImageUrl,
 		arg.PasswordHash,
@@ -164,7 +120,6 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 	err := row.Scan(
 		&i.ID,
 		&i.FullName,
-		&i.Username,
 		&i.Email,
 		&i.PasswordHash,
 		&i.ProfileImageUrl,
@@ -179,15 +134,14 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, e
 
 const update = `-- name: Update :one
 UPDATE users 
-SET full_name = $1, username = $2, email = $3, profile_image_url = $4, password_hash = $5, activated = $6, updated_at = $7,
-last_login_at = $8, version = version + 1
-WHERE id = $9 AND version = $10
+SET full_name = $1, email = $2, profile_image_url = $3, password_hash = $4, activated = $5, updated_at = $6,
+last_login_at = $7, version = version + 1
+WHERE id = $8 AND version = $9
 RETURNING version
 `
 
 type UpdateParams struct {
 	FullName        string
-	Username        string
 	Email           string
 	ProfileImageUrl pgtype.Text
 	PasswordHash    []byte
@@ -201,7 +155,6 @@ type UpdateParams struct {
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (int32, error) {
 	row := q.db.QueryRow(ctx, update,
 		arg.FullName,
-		arg.Username,
 		arg.Email,
 		arg.ProfileImageUrl,
 		arg.PasswordHash,

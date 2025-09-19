@@ -12,7 +12,7 @@ import (
 )
 
 const getSessionForToken = `-- name: GetSessionForToken :one
-SELECT users.id, users.full_name, users.username, users.email, users.password_hash, users.profile_image_url, users.activated, users.last_login_at, users.version, users.created_at, users.updated_at, tokens.hash, tokens.user_id, tokens.expiry, tokens.scope, tokens.created_at, tokens.updated_at
+SELECT users.id, users.full_name, users.email, users.password_hash, users.profile_image_url, users.activated, users.last_login_at, users.version, users.created_at, users.updated_at, tokens.hash, tokens.user_id, tokens.expiry, tokens.scope, tokens.created_at, tokens.updated_at
 FROM users
 INNER JOIN tokens ON users.id = tokens.user_id
 WHERE tokens.hash = $1
@@ -37,7 +37,6 @@ func (q *Queries) GetSessionForToken(ctx context.Context, arg GetSessionForToken
 	err := row.Scan(
 		&i.User.ID,
 		&i.User.FullName,
-		&i.User.Username,
 		&i.User.Email,
 		&i.User.PasswordHash,
 		&i.User.ProfileImageUrl,
