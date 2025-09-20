@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
@@ -81,9 +82,11 @@ const HeroSection = () => {
             Start a Campaign
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
-          <button className="group border border-white/20 hover:border-white/40 text-[#F5F5F5] px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/5">
-            Onboard Your Screens
-          </button>
+          <Link href="/login">
+            <button className="group border border-white/20 hover:border-white/40 text-[#F5F5F5] px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/5">
+              Onboard Your Screens
+            </button>
+          </Link>
         </motion.div>
       </div>
     </section>
@@ -775,7 +778,7 @@ const FooterSection = () => {
             <div className="flex items-center gap-2 mb-6">
               <span className="flex items-center gap-2 font-bold text-2xl">
                 <Image
-                  src="/marketing/logo.png"
+                  src="/marketing/light-logo.png"
                   alt="adCentra"
                   width={48}
                   height={48}

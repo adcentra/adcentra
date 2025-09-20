@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // Navbar Component
 const Navbar = () => {
@@ -86,7 +87,7 @@ const Navbar = () => {
               >
                 <span className="flex items-center gap-1 sm:gap-2">
                   <Image
-                    src="/marketing/logo.png"
+                    src="/marketing/light-logo.png"
                     alt="adCentra"
                     width={48}
                     height={48}
@@ -110,8 +111,15 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Right side - CTA Button and Mobile Menu */}
+            {/* Right side - Login, CTA Button and Mobile Menu */}
             <div className="flex items-center gap-2 sm:gap-4">
+              {/* Login Button */}
+              <Link href="/login">
+                <button className="text-[#F5F5F5] hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 hover:border-white/40 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/5 transition-all duration-200 whitespace-nowrap">
+                  Login
+                </button>
+              </Link>
+
               {/* CTA Button */}
               <button
                 onClick={() => scrollToSection('cta')}
@@ -157,6 +165,13 @@ const Navbar = () => {
                   {item.name}
                 </button>
               ))}
+              <div className="border-t border-white/10 mt-2 pt-2">
+                <Link href="/login">
+                  <button className="block w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold">
+                    Login
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </motion.div>
