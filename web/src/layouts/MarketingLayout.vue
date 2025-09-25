@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { motion } from 'motion-v'
-import { Menu, X } from 'lucide-vue-next'
+import { ArrowRight, Menu, X } from 'lucide-vue-next'
 import lightLogoImage from '@/assets/images/logo/light-logo.png'
+import { useAuthStore } from '@/stores/authStore'
+import { storeToRefs } from 'pinia'
 
 const scrolled = ref(false)
 const mobileMenuOpen = ref(false)
@@ -34,6 +36,10 @@ const navItems = [
   { name: 'How It Works', id: 'how-it-works' },
   { name: 'Why Us', id: 'why-adcentra' },
 ]
+
+const authStore = useAuthStore()
+
+const { isAuthenticated } = storeToRefs(authStore)
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
@@ -78,15 +84,21 @@ onUnmounted(() => {
           <!-- Right side - Login, CTA Button and Mobile Menu -->
           <div class="flex items-center gap-2 sm:gap-4">
             <!-- Login Button -->
-            <router-link to="/login">
+            <router-link v-if="!isAuthenticated" to="/login">
               <button
                 class="hidden sm:block text-[#F5F5F5] hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 hover:border-white/40 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/5 transition-all duration-200 whitespace-nowrap">
                 Login
               </button>
             </router-link>
+            <router-link v-else to="/dashboard">
+              <button
+                class="hidden sm:block text-[#F5F5F5] hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 hover:border-white/40 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/5 transition-all duration-200 whitespace-nowrap">
+                Go to Dashboard
+              </button>
+            </router-link>
 
             <!-- CTA Button -->
-            <button @click="scrollToSection('cta')"
+            <button v-if="!isAuthenticated" @click="scrollToSection('cta')"
               class="bg-white text-black px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 whitespace-nowrap">
               <span class="sm:inline">Get Started →</span>
             </button>
@@ -113,10 +125,17 @@ onUnmounted(() => {
             {{ item.name }}
           </button>
           <div class="border-t border-white/10 mt-2 pt-2">
-            <router-link to="/login">
+            <router-link v-if="!isAuthenticated" to="/login">
               <button
                 class="block w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold">
                 Login
+              </button>
+            </router-link>
+            <router-link v-else to="/dashboard">
+              <button
+                class="flex items-center gap-4 w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold">
+                Go to Dashboard
+                <ArrowRight class="w-5 h-5" />
               </button>
             </router-link>
           </div>

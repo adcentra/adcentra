@@ -42,7 +42,7 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
     await login(values)
 
     // Redirect to home page on successful login
-    await router.push('/')
+    await router.push('/dashboard')
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Login failed. Please try again.'
   } finally {

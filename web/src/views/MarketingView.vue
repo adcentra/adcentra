@@ -192,7 +192,7 @@ const teamMembers = [
   {
     name: 'Aravind Unnikrishnan',
     role: 'Co-founder, CTO',
-    description: 'Heading the engineering and platform development at AdCentra',
+    description: 'Heading engineering and platform development at AdCentra',
     college: 'IIIT Pune',
     image: aravindImage,
     linkedin: 'https://www.linkedin.com/in/aravind-unnikrishnan/',
@@ -232,7 +232,7 @@ const scrollToSection = (sectionId: string) => {
 </script>
 
 <template>
-  <div class="text-[#F5F5F5] font-sans">
+  <div class="text-[#F5F5F5]">
     <!-- Hero Section -->
     <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       <!-- Background with overlay -->
