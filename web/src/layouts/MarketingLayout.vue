@@ -34,7 +34,7 @@ const navItems = [
   { name: 'Solutions', id: 'solutions' },
   { name: 'Features', id: 'features' },
   { name: 'How It Works', id: 'how-it-works' },
-  { name: 'Why Us', id: 'why-adcentra' },
+  { name: 'Our Team', id: 'about-team' },
 ]
 
 const authStore = useAuthStore()

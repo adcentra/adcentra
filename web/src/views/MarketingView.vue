@@ -161,25 +161,6 @@ const analyticsFeatures = [
   'ROI tracking per screen, per campaign.',
 ]
 
-const differentiators = [
-  {
-    title: "India's First",
-    description: 'Standardized DOOH Marketplace.',
-  },
-  {
-    title: 'Built for Trust',
-    description: 'Proof of play + compliance.',
-  },
-  {
-    title: 'Smarter with AI',
-    description: 'Traffic, weather, and demographic intelligence.',
-  },
-  {
-    title: 'Scalable',
-    description: 'One campaign across 100s of screens, one-click.',
-  },
-]
-
 const teamMembers = [
   {
     name: 'Zihaan Mohamed',
@@ -547,32 +528,6 @@ const scrollToSection = (sectionId: string) => {
       </div>
     </section>
 
-    <!-- Why Adcentra Section -->
-    <section id="why-adcentra" class="py-24 px-12 bg-white/[0.02]">
-      <div class="max-w-6xl mx-auto">
-        <motion.h2 :initial="{ opacity: 0, y: 30 }" :whileInView="{ opacity: 1, y: 0 }" :transition="{ duration: 0.6 }"
-          :viewport="{ once: true }" class="text-4xl md:text-5xl font-bold text-[#F5F5F5] text-center mb-20">
-          Why
-          <span class="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
-            AdCentra
-          </span>?
-        </motion.h2>
-
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <motion.div v-for="(item, index) in differentiators" :key="index" :initial="{ opacity: 0, y: 30 }"
-            :whileInView="{ opacity: 1, y: 0 }" :transition="{ duration: 0.6, delay: index * 0.1 }"
-            :viewport="{ once: true }" class="text-center">
-            <h3 class="text-2xl font-bold text-[#F5F5F5] mb-4">
-              {{ item.title }}
-            </h3>
-            <p class="text-[#A3A3A3] text-lg leading-relaxed">
-              {{ item.description }}
-            </p>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-
     <!-- About the Team Section -->
     <section id="about-team" class="py-24 px-12">
       <div class="max-w-4xl mx-auto">
@@ -691,6 +646,29 @@ const scrollToSection = (sectionId: string) => {
               advertisers and media owners through AI-powered programmatic
               advertising.
             </p>
+
+            <!-- Contact Information -->
+            <div class="space-y-3 mb-6">
+              <div class="flex items-center gap-3 text-[#A3A3A3]">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <a href="mailto:connect@adcentra.ai" class="hover:text-[#F5F5F5] transition-colors duration-200">
+                  connect@adcentra.ai
+                </a>
+              </div>
+              <div class="flex items-center gap-3 text-[#A3A3A3]">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <a href="tel:+918921167610" class="hover:text-[#F5F5F5] transition-colors duration-200">
+                  +91 89211 67610
+                </a>
+              </div>
+            </div>
+
             <div class="flex items-center gap-4">
               <button
                 class="bg-white text-black px-6 py-3 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all duration-200 transform hover:scale-105">
