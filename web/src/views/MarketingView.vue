@@ -22,6 +22,8 @@ import mapImage from '@/assets/images/marketing/map.png'
 import inventoryImage from '@/assets/images/marketing/inventory.png'
 import dashboardImage from '@/assets/images/marketing/dashboard.png'
 import lightLogoImage from '@/assets/images/logo/light-logo.png'
+import aravindImage from '@/assets/images/marketing/aravind.jpeg'
+import zihaanImage from '@/assets/images/marketing/zihaan.jpeg'
 
 const problems = [
   'Fragmented DOOH inventory makes it hard to plan at scale.',
@@ -178,6 +180,26 @@ const differentiators = [
   },
 ]
 
+const teamMembers = [
+  {
+    name: 'Zihaan Mohamed',
+    role: 'Co-founder, CEO',
+    description: 'Leading product strategy and market expansion at AdCentra',
+    college: 'IIT Kharagpur',
+    image: zihaanImage,
+    linkedin: 'https://www.linkedin.com/in/zihaan-mohamed/',
+  },
+  {
+    name: 'Aravind Unnikrishnan',
+    role: 'Co-founder, CTO',
+    description: 'Heading the engineering and platform development at AdCentra',
+    college: 'IIIT Pune',
+    image: aravindImage,
+    linkedin: 'https://www.linkedin.com/in/aravind-unnikrishnan/',
+    website: 'https://aravindunnikrishnan.in/',
+  },
+]
+
 const footerLinks = {
   product: [
     { name: 'For Advertisers', href: '#features' },
@@ -186,7 +208,7 @@ const footerLinks = {
     { name: 'Analytics', href: '#analytics' },
   ],
   company: [
-    { name: 'About Us', href: '#' },
+    { name: 'About Us', href: '#about-team' },
     { name: 'Careers', href: '#' },
     { name: 'Blog', href: '#' },
     { name: 'Contact', href: '#cta' },
@@ -546,6 +568,79 @@ const scrollToSection = (sectionId: string) => {
             <p class="text-[#A3A3A3] text-lg leading-relaxed">
               {{ item.description }}
             </p>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About the Team Section -->
+    <section id="about-team" class="py-24 px-12">
+      <div class="max-w-4xl mx-auto">
+        <motion.h2 :initial="{ opacity: 0, y: 30 }" :whileInView="{ opacity: 1, y: 0 }" :transition="{ duration: 0.6 }"
+          :viewport="{ once: true }" class="text-4xl md:text-5xl font-bold text-[#F5F5F5] text-center mb-6">
+          Meet the
+          <span class="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+            Team
+          </span>
+        </motion.h2>
+
+        <motion.p :initial="{ opacity: 0, y: 30 }" :whileInView="{ opacity: 1, y: 0 }"
+          :transition="{ duration: 0.6, delay: 0.1 }" :viewport="{ once: true }"
+          class="text-xl text-[#A3A3A3] text-center mb-16">
+          Building the future of DOOH advertising together
+        </motion.p>
+
+        <div class="grid md:grid-cols-2 gap-12 max-w-3xl mx-auto">
+          <motion.div v-for="(member, index) in teamMembers" :key="index" :initial="{ opacity: 0, y: 30 }"
+            :whileInView="{ opacity: 1, y: 0 }" :transition="{ duration: 0.6, delay: index * 0.2 }"
+            :viewport="{ once: true }" class="text-center group">
+
+            <!-- Profile Image -->
+            <div class="relative mb-6 mx-auto w-32 h-32 md:w-40 md:h-40">
+              <div
+                class="w-full h-full rounded-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 p-1 group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-all duration-300">
+                <img :src="member.image" :alt="member.name"
+                  class="w-full h-full rounded-full object-cover border-2 border-white/10 group-hover:border-white/20 transition-all duration-300 grayscale contrast-[110%]" />
+              </div>
+            </div>
+
+            <!-- Member Info -->
+            <div class="space-y-2 mb-6">
+              <h3 class="text-2xl font-bold text-[#F5F5F5] group-hover:text-white transition-colors duration-300">
+                {{ member.name }}
+              </h3>
+              <p
+                class="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                {{ member.role }}
+              </p>
+              <p class="text-[#A3A3A3] text-base leading-relaxed">
+                {{ member.description }}
+              </p>
+              <p class="text-sm text-[#A3A3A3]/70">
+                {{ member.college }}
+              </p>
+            </div>
+
+            <!-- Social Links -->
+            <div class="flex justify-center items-center gap-4">
+              <a :href="member.linkedin" target="_blank" rel="noopener noreferrer"
+                class="group/link flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 hover:border-blue-400/50 hover:bg-blue-400/10 transition-all duration-300 text-[#A3A3A3] hover:text-blue-400">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+                <span class="text-sm font-medium">LinkedIn</span>
+              </a>
+
+              <a v-if="member.website" :href="member.website" target="_blank" rel="noopener noreferrer"
+                class="group/link flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 hover:border-purple-400/50 hover:bg-purple-400/10 transition-all duration-300 text-[#A3A3A3] hover:text-purple-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                </svg>
+                <span class="text-sm font-medium">Website</span>
+              </a>
+            </div>
           </motion.div>
         </div>
       </div>
