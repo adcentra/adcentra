@@ -17,7 +17,7 @@ const (
 	deleteLocalSessionScope  = "local"
 	deleteOthersSessionScope = "others"
 
-	authTokenTTL          = 1 * time.Hour
+	authTokenTTL          = 15 * time.Minute
 	refreshTokenTTL       = 15 * 24 * time.Hour
 	activationTokenTTL    = 12 * time.Hour
 	passwordResetTokenTTL = 45 * time.Minute
