@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"adcentra.ai/internal/i18n"
 	"github.com/labstack/echo/v4"
 )
 
@@ -35,52 +36,67 @@ func (app *application) logError(r *http.Request, err error) {
 	)
 }
 
-func (app *application) wrapValidationErrors(errors map[string]string) echo.Map {
+func (app *application) wrapValidationErrors(c echo.Context, errors map[string]string) echo.Map {
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "ValidationError", nil)
+	
 	return echo.Map{
-		"message":      "The data you provided is invalid, please fix the errors and try again.",
+		"message":      message,
 		"field_errors": errors,
 	}
 }
 
-func (app *application) serverErrorResponse(e echo.Context, err error) error {
-	app.logError(e.Request(), err)
-	return echo.NewHTTPError(http.StatusInternalServerError, "The server encountered a problem and could not process your request")
+func (app *application) serverErrorResponse(c echo.Context, err error) error {
+	app.logError(c.Request(), err)
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "ServerError", nil)
+	return echo.NewHTTPError(http.StatusInternalServerError, message)
 }
 
-func (app *application) badRequestResponse(err error) error {
-	return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+func (app *application) badRequestResponse(c echo.Context, err error) error {
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "BadRequest", nil)
+	return echo.NewHTTPError(http.StatusBadRequest, message + ": " + err.Error())
 }
 
-func (app *application) failedValidationResponse(errors map[string]string) error {
-	return echo.NewHTTPError(http.StatusUnprocessableEntity, app.wrapValidationErrors(errors))
+func (app *application) failedValidationResponse(c echo.Context, errors map[string]string) error {
+	return echo.NewHTTPError(http.StatusUnprocessableEntity, app.wrapValidationErrors(c, errors))
 }
 
-func (app *application) editConflictResponse() error {
-	return echo.NewHTTPError(http.StatusConflict, "Unable to update the record due to an edit conflict, please try again")
+func (app *application) editConflictResponse(c echo.Context) error {
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "EditConflict", nil)
+	return echo.NewHTTPError(http.StatusConflict, message)
 }
 
-func (app *application) invalidCredentialsResponse() error {
-	return echo.NewHTTPError(http.StatusUnauthorized, "Invalid authentication credentials")
+func (app *application) invalidCredentialsResponse(c echo.Context) error {
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "InvalidCredentials", nil)
+	return echo.NewHTTPError(http.StatusUnauthorized, message)
 }
 
 func (app *application) invalidAuthenticationTokenResponse(c echo.Context) error {
 	c.Response().Header().Set("WWW-Authenticate", "Bearer")
 
-	message := "Invalid or missing authentication token"
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "InvalidAuthToken", nil)
 	return echo.NewHTTPError(http.StatusUnauthorized, message)
 }
 
-func (app *application) authenticationRequiredResponse() error {
-	message := "You must be authenticated to access this resource"
+func (app *application) authenticationRequiredResponse(c echo.Context) error {
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "AuthenticationRequired", nil)
 	return echo.NewHTTPError(http.StatusUnauthorized, message)
 }
 
-func (app *application) inactiveAccountResponse() error {
-	message := "Your account must be activated to access this resource"
+func (app *application) inactiveAccountResponse(c echo.Context) error {
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "InactiveAccount", nil)
 	return echo.NewHTTPError(http.StatusForbidden, message)
 }
 
-func (app *application) notPermittedResponse() error {
-	message := "Your account doesn't have the necessary permissions to access this resource"
+func (app *application) notPermittedResponse(c echo.Context) error {
+	localizer := app.contextGetLocalizer(c)
+	message := i18n.LocalizeMessage(localizer, "NotPermitted", nil)
 	return echo.NewHTTPError(http.StatusForbidden, message)
 }

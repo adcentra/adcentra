@@ -7,9 +7,11 @@ import (
 	"time"
 
 	"adcentra.ai/internal/db/sqlc"
+	i18n "adcentra.ai/internal/i18n"
 	"adcentra.ai/internal/validator"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
+	goi18n "github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 const (
@@ -61,9 +63,9 @@ func generateToken(userID int64, ttl time.Duration, scope string) *Token {
 	return token
 }
 
-func ValidateTokenPlaintext(v *validator.Validator, tokenPlaintext string) {
-	v.Check(tokenPlaintext != "", "token", "Token must be provided")
-	v.Check(len(tokenPlaintext) == 26, "token", "Token must be 26 bytes long")
+func ValidateTokenPlaintext(v *validator.Validator, localizer *goi18n.Localizer, tokenPlaintext string) {
+	v.Check(tokenPlaintext != "", "token", i18n.LocalizeMessage(localizer, "TokenMustBeProvided", nil))
+	v.Check(len(tokenPlaintext) == 26, "token", i18n.LocalizeMessage(localizer, "TokenMustBe26BytesLong", nil))
 }
 
 type TokenModel struct {

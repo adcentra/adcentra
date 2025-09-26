@@ -16,6 +16,7 @@ func (app *application) routes() *echo.Echo {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(app.metrics())
+	e.Use(app.localization)
 	e.Use(middleware.SecureWithConfig(middleware.SecureConfig{
 		XSSProtection:         "1; mode=block", // Prevents XSS
 		ContentTypeNosniff:    "nosniff",       // Stops MIME sniffing

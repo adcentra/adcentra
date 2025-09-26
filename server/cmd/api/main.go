@@ -14,6 +14,7 @@ import (
 
 	"adcentra.ai/internal/cache"
 	"adcentra.ai/internal/data"
+	"adcentra.ai/internal/i18n"
 	"adcentra.ai/internal/mailer"
 	"adcentra.ai/internal/vcs"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -158,6 +159,14 @@ func main() {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
+
+	// Initialize i18n bundle
+	err = i18n.Init()
+	if err != nil {
+		logger.Error("failed to initialize i18n", "error", err.Error())
+		os.Exit(1)
+	}
+	logger.Info("i18n bundle initialized")
 
 	// Initialize cache with graceful degradation
 	var cacheInstance cache.Cache

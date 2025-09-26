@@ -1,0 +1,146 @@
+[
+  {
+    "id": "ServerError",
+    "translation": "El servidor encontró un problema y no pudo procesar su solicitud"
+  },
+  {
+    "id": "ValidationError",
+    "translation": "Los datos que proporcionó no son válidos, por favor corrija los errores e intente nuevamente."
+  },
+  {
+    "id": "BadRequest",
+    "translation": "Solicitud incorrecta"
+  },
+  {
+    "id": "EditConflict",
+    "translation": "No se puede actualizar el registro debido a un conflicto de edición, por favor intente nuevamente"
+  },
+  {
+    "id": "InvalidCredentials",
+    "translation": "Credenciales de autenticación inválidas"
+  },
+  {
+    "id": "InvalidAuthToken",
+    "translation": "Token de autenticación inválido o faltante"
+  },
+  {
+    "id": "AuthenticationRequired",
+    "translation": "Debe estar autenticado para acceder a este recurso"
+  },
+  {
+    "id": "InactiveAccount",
+    "translation": "Su cuenta debe estar activada para acceder a este recurso"
+  },
+  {
+    "id": "NotPermitted",
+    "translation": "Su cuenta no tiene los permisos necesarios para acceder a este recurso"
+  },
+  {
+    "id": "UserRegistered",
+    "translation": "Registro de usuario exitoso"
+  },
+  {
+    "id": "UserActivated",
+    "translation": "Usuario activado exitosamente"
+  },
+  {
+    "id": "PasswordRequired",
+    "translation": "La contraseña es obligatoria"
+  },
+  {
+    "id": "PasswordUpdated",
+    "translation": "Contraseña actualizada exitosamente"
+  },
+  {
+    "id": "TokenCreated",
+    "translation": "Token de autenticación creado exitosamente"
+  },
+  {
+    "id": "TokenRefreshed",
+    "translation": "Token de autenticación renovado exitosamente"
+  },
+  {
+    "id": "ActivationTokenCreated",
+    "translation": "Se le enviará un correo electrónico con el token de activación"
+  },
+  {
+    "id": "PasswordResetTokenCreated",
+    "translation": "Se le enviará un correo electrónico con el token de restablecimiento de contraseña"
+  },
+  {
+    "id": "TokenDeleted",
+    "translation": "Token de autenticación eliminado exitosamente"
+  },
+  {
+    "id": "UserAlreadyExists",
+    "translation": "Ya existe un usuario con esta dirección de correo electrónico"
+  },
+  {
+    "id": "UserNotFound",
+    "translation": "Usuario no encontrado"
+  },
+  {
+    "id": "TokenMustBeProvided",
+    "translation": "Token debe ser proporcionado"
+  },
+  {
+    "id": "TokenMustBe26BytesLong",
+    "translation": "Token debe tener 26 bytes de longitud"
+  },
+  {
+    "id": "InvalidToken",
+    "translation": "Token inválido o expirado"
+  },
+  {
+    "id": "AlreadyActivated",
+    "translation": "Su cuenta ya ha sido activada"
+  },
+  {
+    "id": "EmailMustBeProvided",
+    "translation": "El correo electrónico es obligatorio"
+  },
+  {
+    "id": "EmailMustBeValid",
+    "translation": "El correo electrónico debe ser una dirección de correo electrónico válida"
+  },
+  {
+    "id": "PasswordMustBeProvided",
+    "translation": "La contraseña es obligatoria"
+  },
+  {
+    "id": "PasswordMustBeValid",
+    "translation": "La contraseña debe ser una contraseña válida"
+  },
+  {
+    "id": "PasswordMustBeAtLeast8CharactersLong",
+    "translation": "La contraseña debe tener al menos 8 caracteres"
+  },
+  {
+    "id": "PasswordMustNotBeMoreThan72CharactersLong",
+    "translation": "La contraseña no debe tener más de 72 caracteres"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1LowerCaseCharacter",
+    "translation": "La contraseña debe tener al menos 1 carácter en minúscula"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1UpperCaseCharacter",
+    "translation": "La contraseña debe tener al menos 1 carácter en mayúscula"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1SpecialCharacter",
+    "translation": "La contraseña debe tener al menos 1 carácter especial"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1NumericCharacter",
+    "translation": "La contraseña debe tener al menos 1 carácter numérico"
+  },
+  {
+    "id": "FullNameMustBeProvided",
+    "translation": "El nombre completo es obligatorio"
+  },
+  {
+    "id": "FullNameMustNotBeMoreThan32CharactersLong",
+    "translation": "El nombre completo no debe tener más de 32 caracteres"
+  }
+]

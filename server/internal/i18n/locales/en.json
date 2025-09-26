@@ -1,0 +1,146 @@
+[
+  {
+    "id": "ServerError",
+    "translation": "The server encountered a problem and could not process your request"
+  },
+  {
+    "id": "ValidationError",
+    "translation": "The data you provided is invalid, please fix the errors and try again."
+  },
+  {
+    "id": "BadRequest",
+    "translation": "Bad request"
+  },
+  {
+    "id": "EditConflict",
+    "translation": "Unable to update the record due to an edit conflict, please try again"
+  },
+  {
+    "id": "InvalidCredentials",
+    "translation": "Invalid authentication credentials"
+  },
+  {
+    "id": "InvalidAuthToken",
+    "translation": "Invalid or missing authentication token"
+  },
+  {
+    "id": "AuthenticationRequired",
+    "translation": "You must be authenticated to access this resource"
+  },
+  {
+    "id": "InactiveAccount",
+    "translation": "Your account must be activated to access this resource"
+  },
+  {
+    "id": "NotPermitted",
+    "translation": "Your account doesn't have the necessary permissions to access this resource"
+  },
+  {
+    "id": "UserRegistered",
+    "translation": "User registration successful"
+  },
+  {
+    "id": "UserActivated",
+    "translation": "User activated successfully"
+  },
+  {
+    "id": "PasswordRequired",
+    "translation": "Password must be provided"
+  },
+  {
+    "id": "PasswordUpdated",
+    "translation": "Password updated successfully"
+  },
+  {
+    "id": "TokenCreated",
+    "translation": "Authentication token created successfully"
+  },
+  {
+    "id": "TokenRefreshed",
+    "translation": "Authentication token refreshed successfully"
+  },
+  {
+    "id": "ActivationTokenCreated",
+    "translation": "An email will be sent to you containing the activation token"
+  },
+  {
+    "id": "PasswordResetTokenCreated",
+    "translation": "An email will be sent to you containing the password reset token"
+  },
+  {
+    "id": "TokenDeleted",
+    "translation": "Authentication token deleted successfully"
+  },
+  {
+    "id": "UserAlreadyExists",
+    "translation": "A user with this email address already exists"
+  },
+  {
+    "id": "UserNotFound",
+    "translation": "User not found"
+  },
+  {
+    "id": "TokenMustBeProvided",
+    "translation": "Token must be provided"
+  },
+  {
+    "id": "TokenMustBe26BytesLong",
+    "translation": "Token must be 26 bytes long"
+  },
+  {
+    "id": "InvalidToken",
+    "translation": "Invalid or expired token"
+  },
+  {
+    "id": "AlreadyActivated",
+    "translation": "Your account has already been activated"
+  },
+  {
+    "id": "EmailMustBeProvided",
+    "translation": "Email must be provided"
+  },
+  {
+    "id": "EmailMustBeValid",
+    "translation": "Email must be a valid email address"
+  },
+  {
+    "id": "PasswordMustBeProvided",
+    "translation": "Password must be provided"
+  },
+  {
+    "id": "PasswordMustBeValid",
+    "translation": "Password must be a valid password"
+  },
+  {
+    "id": "PasswordMustBeAtLeast8CharactersLong",
+    "translation": "Password must be at least 8 characters long"
+  },
+  {
+    "id": "PasswordMustNotBeMoreThan72CharactersLong",
+    "translation": "Password must not be more than 72 characters long"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1LowerCaseCharacter",
+    "translation": "Password must have at least 1 lower-case character"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1UpperCaseCharacter",
+    "translation": "Password must have at least 1 upper-case character"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1SpecialCharacter",
+    "translation": "Password must have at least 1 special character"
+  },
+  {
+    "id": "PasswordMustHaveAtLeast1NumericCharacter",
+    "translation": "Password must have at least 1 numeric character"
+  },
+  {
+    "id": "FullNameMustBeProvided",
+    "translation": "Full name must be provided"
+  },
+  {
+    "id": "FullNameMustNotBeMoreThan32CharactersLong",
+    "translation": "Full name must not be more than 32 characters long"
+  }
+]

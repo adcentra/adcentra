@@ -10,11 +10,13 @@ import (
 	"time"
 
 	"adcentra.ai/internal/db/sqlc"
+	i18n "adcentra.ai/internal/i18n"
 	"adcentra.ai/internal/validator"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
+	goi18n "github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -96,29 +98,29 @@ func (p *password) DummyMatches(plaintextPassword string) {
 	bcrypt.CompareHashAndPassword(p.hash, []byte(plaintextPassword))
 }
 
-func ValidateEmail(v *validator.Validator, email string) {
-	v.Check(validator.NotBlank(email), "email", "Email must be provided")
-	v.Check(validator.Matches(email, validator.EmailRX), "email", "Email must be a valid email address")
+func ValidateEmail(v *validator.Validator, localizer *goi18n.Localizer, email string) {
+	v.Check(validator.NotBlank(email), "email", i18n.LocalizeMessage(localizer, "EmailMustBeProvided", nil))
+	v.Check(validator.Matches(email, validator.EmailRX), "email", i18n.LocalizeMessage(localizer, "EmailMustBeValid", nil))
 }
 
-func ValidatePasswordPlaintext(v *validator.Validator, password string) {
-	v.Check(validator.NotBlank(password), "password", "Password must be provided")
-	v.Check(validator.MinChars(password, 8), "password", "Password must be at least 8 characters long")
-	v.Check(validator.MaxChars(password, 72), "password", "Password must not be more than 72 characters long")
-	v.Check(validator.Matches(password, validator.HasLowerRX), "password", "Password must have atleast 1 lower-case character")
-	v.Check(validator.Matches(password, validator.HasUpperRX), "password", "Password must have atleast 1 upper-case character")
-	v.Check(validator.Matches(password, validator.HasSpecialRX), "password", "Password must have atleast 1 special character (! @ # $ & *)")
-	v.Check(validator.Matches(password, validator.HasDigitRX), "password", "Password must have atleast 1 numeric character")
+func ValidatePasswordPlaintext(v *validator.Validator, localizer *goi18n.Localizer, password string) {
+	v.Check(validator.NotBlank(password), "password", i18n.LocalizeMessage(localizer, "PasswordMustBeProvided", nil))
+	v.Check(validator.MinChars(password, 8), "password", i18n.LocalizeMessage(localizer, "PasswordMustBeAtLeast8CharactersLong", nil))
+	v.Check(validator.MaxChars(password, 72), "password", i18n.LocalizeMessage(localizer, "PasswordMustNotBeMoreThan72CharactersLong", nil))
+	v.Check(validator.Matches(password, validator.HasLowerRX), "password", i18n.LocalizeMessage(localizer, "PasswordMustHaveAtLeast1LowerCaseCharacter", nil))
+	v.Check(validator.Matches(password, validator.HasUpperRX), "password", i18n.LocalizeMessage(localizer, "PasswordMustHaveAtLeast1UpperCaseCharacter", nil))
+	v.Check(validator.Matches(password, validator.HasSpecialRX), "password", i18n.LocalizeMessage(localizer, "PasswordMustHaveAtLeast1SpecialCharacter", nil))
+	v.Check(validator.Matches(password, validator.HasDigitRX), "password", i18n.LocalizeMessage(localizer, "PasswordMustHaveAtLeast1NumericCharacter", nil))
 }
 
-func ValidateUser(v *validator.Validator, user *User) {
-	v.Check(validator.NotBlank(user.FullName), "full_name", "Full name must be provided")
-	v.Check(validator.MaxChars(user.FullName, 32), "full_name", "Full name must not be more than 32 characters long")
+func ValidateUser(v *validator.Validator, localizer *goi18n.Localizer, user *User) {
+	v.Check(validator.NotBlank(user.FullName), "full_name", i18n.LocalizeMessage(localizer, "FullNameMustBeProvided", nil))
+	v.Check(validator.MaxChars(user.FullName, 32), "full_name", i18n.LocalizeMessage(localizer, "FullNameMustNotBeMoreThan32CharactersLong", nil))
 
-	ValidateEmail(v, user.Email)
+	ValidateEmail(v, localizer, user.Email)
 
 	if user.Password.plaintext != nil {
-		ValidatePasswordPlaintext(v, *user.Password.plaintext)
+		ValidatePasswordPlaintext(v, localizer, *user.Password.plaintext)
 	}
 
 	// If the password hash is ever nil, this will be due to a logic error in our

@@ -7,11 +7,13 @@ import (
 	"time"
 
 	"adcentra.ai/internal/data"
+	"adcentra.ai/internal/i18n"
 	"adcentra.ai/internal/validator"
 	"github.com/labstack/echo/v4"
 )
 
 func (app *application) registerUser(e echo.Context) error {
+	localizer := app.contextGetLocalizer(e)
 	ctx, cancel := context.WithTimeout(e.Request().Context(), 10*time.Second)
 	defer cancel()
 
@@ -22,7 +24,7 @@ func (app *application) registerUser(e echo.Context) error {
 	}
 
 	if err := e.Bind(&input); err != nil {
-		return app.badRequestResponse(err)
+		return app.badRequestResponse(e, err)
 	}
 
 	user := &data.User{
@@ -37,16 +39,16 @@ func (app *application) registerUser(e echo.Context) error {
 
 	v := validator.New()
 
-	if data.ValidateUser(v, user); !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
+	if data.ValidateUser(v, localizer, user); !v.Valid() {
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	err := app.models.Users.Insert(ctx, user)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrDuplicateEmail):
-			v.AddError("email", "A user with this email already exists")
-			return app.failedValidationResponse(v.Errors)
+			v.AddError("email", i18n.LocalizeMessage(localizer, "UserAlreadyExists", nil))
+			return app.failedValidationResponse(e, v.Errors)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -88,7 +90,7 @@ func (app *application) registerUser(e echo.Context) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrEditConflict):
-			return app.editConflictResponse()
+			return app.editConflictResponse(e)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -111,6 +113,7 @@ func (app *application) registerUser(e echo.Context) error {
 }
 
 func (app *application) activateUser(e echo.Context) error {
+	localizer := app.contextGetLocalizer(e)
 	ctx, cancel := context.WithTimeout(e.Request().Context(), 10*time.Second)
 	defer cancel()
 
@@ -119,21 +122,21 @@ func (app *application) activateUser(e echo.Context) error {
 	}
 
 	if err := e.Bind(&input); err != nil {
-		return app.badRequestResponse(err)
+		return app.badRequestResponse(e, err)
 	}
 
 	v := validator.New()
 
-	if data.ValidateTokenPlaintext(v, input.TokenPlainText); !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
+	if data.ValidateTokenPlaintext(v, localizer, input.TokenPlainText); !v.Valid() {
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	user, err := app.models.Users.GetForToken(ctx, data.ScopeActivation, input.TokenPlainText)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			v.AddError("token", "Invalid or expired activation token")
-			return app.failedValidationResponse(v.Errors)
+			v.AddError("token", i18n.LocalizeMessage(localizer, "InvalidToken", nil))
+			return app.failedValidationResponse(e, v.Errors)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -145,7 +148,7 @@ func (app *application) activateUser(e echo.Context) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrEditConflict):
-			return app.editConflictResponse()
+			return app.editConflictResponse(e)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -168,6 +171,7 @@ func (app *application) getCurrentUser(e echo.Context) error {
 }
 
 func (app *application) updateUserPassword(e echo.Context) error {
+	localizer := app.contextGetLocalizer(e)
 	ctx, cancel := context.WithTimeout(e.Request().Context(), 10*time.Second)
 	defer cancel()
 
@@ -177,24 +181,24 @@ func (app *application) updateUserPassword(e echo.Context) error {
 	}
 
 	if err := e.Bind(&input); err != nil {
-		return app.badRequestResponse(err)
+		return app.badRequestResponse(e, err)
 	}
 
 	v := validator.New()
 
-	data.ValidateTokenPlaintext(v, input.TokenPlainText)
-	data.ValidatePasswordPlaintext(v, input.Password)
+	data.ValidateTokenPlaintext(v, localizer, input.TokenPlainText)
+	data.ValidatePasswordPlaintext(v, localizer, input.Password)
 
 	if !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	user, err := app.models.Users.GetForToken(ctx, data.ScopePasswordReset, input.TokenPlainText)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			v.AddError("token", "Invalid or expired password reset token")
-			return app.failedValidationResponse(v.Errors)
+			v.AddError("token", i18n.LocalizeMessage(localizer, "InvalidToken", nil))
+			return app.failedValidationResponse(e, v.Errors)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -209,7 +213,7 @@ func (app *application) updateUserPassword(e echo.Context) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrEditConflict):
-			return app.editConflictResponse()
+			return app.editConflictResponse(e)
 		default:
 			return app.serverErrorResponse(e, err)
 		}

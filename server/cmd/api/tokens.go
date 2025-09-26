@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"adcentra.ai/internal/data"
+	"adcentra.ai/internal/i18n"
 	"adcentra.ai/internal/validator"
 	"github.com/labstack/echo/v4"
 )
@@ -17,13 +18,14 @@ const (
 	deleteLocalSessionScope  = "local"
 	deleteOthersSessionScope = "others"
 
-	authTokenTTL          = 15 * time.Minute
+	authTokenTTL          = 1 * time.Minute
 	refreshTokenTTL       = 15 * 24 * time.Hour
 	activationTokenTTL    = 12 * time.Hour
 	passwordResetTokenTTL = 45 * time.Minute
 )
 
 func (app *application) createAuthenticationToken(e echo.Context) error {
+	localizer := app.contextGetLocalizer(e)
 	ctx, cancel := context.WithTimeout(e.Request().Context(), 10*time.Second)
 	defer cancel()
 
@@ -33,16 +35,16 @@ func (app *application) createAuthenticationToken(e echo.Context) error {
 	}
 
 	if err := e.Bind(&input); err != nil {
-		return app.badRequestResponse(err)
+		return app.badRequestResponse(e, err)
 	}
 
 	v := validator.New()
 
-	data.ValidateEmail(v, input.Email)
-	v.Check(validator.NotBlank(input.Password), "password", "Password must be provided")
+	data.ValidateEmail(v, localizer, input.Email)
+	v.Check(validator.NotBlank(input.Password), "password", i18n.LocalizeMessage(localizer, "PasswordRequired", nil))
 
 	if !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	var user *data.User
@@ -67,7 +69,7 @@ func (app *application) createAuthenticationToken(e echo.Context) error {
 	}
 
 	if !authSuccess {
-		return app.invalidCredentialsResponse()
+		return app.invalidCredentialsResponse(e)
 	}
 
 	refreshToken, err := app.models.Tokens.New(ctx, user.ID, refreshTokenTTL, data.ScopeRefresh)
@@ -86,7 +88,7 @@ func (app *application) createAuthenticationToken(e echo.Context) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrEditConflict):
-			return app.editConflictResponse()
+			return app.editConflictResponse(e)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -119,7 +121,7 @@ func (app *application) deleteAuthenticationToken(e echo.Context) error {
 	// can be deleted if the logout scope is local (or avoid deleting if logout scope is others)
 	refreshTokenCookie, err := e.Cookie("refresh_token")
 	if err != nil {
-		return app.invalidCredentialsResponse()
+		return app.invalidCredentialsResponse(e)
 	}
 	refreshToken := refreshTokenCookie.Value
 
@@ -152,7 +154,7 @@ func (app *application) deleteAuthenticationToken(e echo.Context) error {
 	default:
 		v := validator.New()
 		v.AddError("scope", "invalid scope")
-		return app.failedValidationResponse(v.Errors)
+		return app.failedValidationResponse(e, v.Errors)
 	}
 	if err != nil {
 		return app.serverErrorResponse(e, err)
@@ -166,6 +168,8 @@ func (app *application) deleteAuthenticationToken(e echo.Context) error {
 }
 
 func (app *application) createActivationToken(e echo.Context) error {
+	localizer := app.contextGetLocalizer(e)
+
 	ctx, cancel := context.WithTimeout(e.Request().Context(), 6*time.Second)
 	defer cancel()
 
@@ -174,29 +178,29 @@ func (app *application) createActivationToken(e echo.Context) error {
 	}
 
 	if err := e.Bind(&input); err != nil {
-		return app.badRequestResponse(err)
+		return app.badRequestResponse(e, err)
 	}
 
 	v := validator.New()
 
-	if data.ValidateEmail(v, input.Email); !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
+	if data.ValidateEmail(v, localizer, input.Email); !v.Valid() {
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	user, err := app.models.Users.GetByEmail(ctx, input.Email)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			v.AddError("email", "No matching email address found")
-			return app.failedValidationResponse(v.Errors)
+			v.AddError("email", i18n.LocalizeMessage(localizer, "UserNotFound", nil))
+			return app.failedValidationResponse(e, v.Errors)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
 	}
 
 	if user.Activated {
-		v.AddError("email", "Your account has already been activated")
-		return app.failedValidationResponse(v.Errors)
+		v.AddError("email", i18n.LocalizeMessage(localizer, "AlreadyActivated", nil))
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	token, err := app.models.Tokens.New(ctx, user.ID, activationTokenTTL, data.ScopeActivation)
@@ -216,12 +220,14 @@ func (app *application) createActivationToken(e echo.Context) error {
 		}
 	})
 
+	message := i18n.LocalizeMessage(localizer, "ActivationTokenCreated", nil)
 	return e.JSON(http.StatusAccepted, echo.Map{
-		"message": "An email will be sent to you containing the activation token",
+		"message": message,
 	})
 }
 
 func (app *application) createPasswordResetToken(e echo.Context) error {
+	localizer := app.contextGetLocalizer(e)
 	ctx, cancel := context.WithTimeout(e.Request().Context(), 6*time.Second)
 	defer cancel()
 
@@ -230,29 +236,29 @@ func (app *application) createPasswordResetToken(e echo.Context) error {
 	}
 
 	if err := e.Bind(&input); err != nil {
-		return app.badRequestResponse(err)
+		return app.badRequestResponse(e, err)
 	}
 
 	v := validator.New()
 
-	if data.ValidateEmail(v, input.Email); !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
+	if data.ValidateEmail(v, localizer, input.Email); !v.Valid() {
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	user, err := app.models.Users.GetByEmail(ctx, input.Email)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			v.AddError("email", "No matching account found")
-			return app.failedValidationResponse(v.Errors)
+			v.AddError("email", i18n.LocalizeMessage(localizer, "UserNotFound", nil))
+			return app.failedValidationResponse(e, v.Errors)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
 	}
 
 	if !user.Activated {
-		v.AddError("email", "Your account must be activated to reset password")
-		return app.failedValidationResponse(v.Errors)
+		v.AddError("email", i18n.LocalizeMessage(localizer, "AccountNotActivated", nil))
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	token, err := app.models.Tokens.New(ctx, user.ID, passwordResetTokenTTL, data.ScopePasswordReset)
@@ -271,26 +277,28 @@ func (app *application) createPasswordResetToken(e echo.Context) error {
 		}
 	})
 
+	message := i18n.LocalizeMessage(localizer, "PasswordResetTokenCreated", nil)
 	return e.JSON(http.StatusAccepted, echo.Map{
-		"message": "An email will be sent to you containing the password reset token",
+		"message": message,
 	})
 }
 
 func (app *application) refreshAuthenticationToken(e echo.Context) error {
+	localizer := app.contextGetLocalizer(e)
 	ctx, cancel := context.WithTimeout(e.Request().Context(), 10*time.Second)
 	defer cancel()
 
 	// Get refresh token from cookie
 	refreshTokenCookie, err := e.Cookie("refresh_token")
 	if err != nil {
-		return app.invalidCredentialsResponse()
+		return app.invalidCredentialsResponse(e)
 	}
 
 	refreshToken := refreshTokenCookie.Value
 
 	v := validator.New()
-	if data.ValidateTokenPlaintext(v, refreshToken); !v.Valid() {
-		return app.failedValidationResponse(v.Errors)
+	if data.ValidateTokenPlaintext(v, localizer, refreshToken); !v.Valid() {
+		return app.failedValidationResponse(e, v.Errors)
 	}
 
 	// Get the user associated with the refresh token
@@ -298,7 +306,7 @@ func (app *application) refreshAuthenticationToken(e echo.Context) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			return app.invalidCredentialsResponse()
+			return app.invalidCredentialsResponse(e)
 		default:
 			return app.serverErrorResponse(e, err)
 		}
@@ -330,7 +338,7 @@ func (app *application) refreshAuthenticationToken(e echo.Context) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrEditConflict):
-			return app.editConflictResponse()
+			return app.editConflictResponse(e)
 		default:
 			return app.serverErrorResponse(e, err)
 		}

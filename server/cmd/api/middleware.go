@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"adcentra.ai/internal/data"
+	"adcentra.ai/internal/i18n"
 	"adcentra.ai/internal/validator"
 	"github.com/labstack/echo/v4"
 )
@@ -52,6 +53,8 @@ func (app *application) authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx, cancel := context.WithTimeout(c.Request().Context(), 5*time.Second)
 		defer cancel()
 
+		localizer := app.contextGetLocalizer(c)
+
 		c.Response().Header().Set("Vary", "Authorization")
 
 		authorizationHeader := c.Request().Header.Get("Authorization")
@@ -72,7 +75,7 @@ func (app *application) authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 
 		v := validator.New()
 
-		if data.ValidateTokenPlaintext(v, tokenPlainText); !v.Valid() {
+		if data.ValidateTokenPlaintext(v, localizer, tokenPlainText); !v.Valid() {
 			return app.invalidAuthenticationTokenResponse(c)
 		}
 
@@ -122,7 +125,7 @@ func (app *application) requireAuthentication(next echo.HandlerFunc) echo.Handle
 	return func(c echo.Context) error {
 		session := app.contextGetSession(c)
 		if session.User.IsAnonymous() {
-			return app.authenticationRequiredResponse()
+			return app.authenticationRequiredResponse(c)
 		}
 
 		return next(c)
@@ -134,7 +137,7 @@ func (app *application) requireActivation(next echo.HandlerFunc) echo.HandlerFun
 		session := app.contextGetSession(c)
 
 		if !session.User.Activated {
-			return app.inactiveAccountResponse()
+			return app.inactiveAccountResponse(c)
 		}
 
 		return next(c)
@@ -152,11 +155,29 @@ func (app *application) requirePermissions(permCodes ...data.PermCode) echo.Midd
 
 			for _, code := range permCodes {
 				if !session.PermissionMap[code] {
-					return app.notPermittedResponse()
+					return app.notPermittedResponse(c)
 				}
 			}
 
 			return next(c)
 		}
+	}
+}
+
+func (app *application) localization(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// Get the Accept-Language header
+		acceptLanguage := c.Request().Header.Get("Accept-Language")
+		
+		// Determine the best language match
+		language := i18n.GetLanguageFromAcceptLanguage(acceptLanguage)
+		
+		// Create a localizer for this request
+		localizer := i18n.NewLocalizer(language)
+		
+		// Set the localizer in the context
+		app.contextSetLocalizer(c, localizer)
+		
+		return next(c)
 	}
 }
