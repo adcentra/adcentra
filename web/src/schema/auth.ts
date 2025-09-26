@@ -9,12 +9,15 @@ export const AuthTokenSchema = z.object({
 
 export type AuthToken = z.infer<typeof AuthTokenSchema>
 
-export const LoginRequestSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
+export const CreateLoginRequestSchema = (t: (key: string) => string): z.ZodSchema<LoginRequest> => z.object({
+  email: z.string().min(1, t('errors.emailRequired')).email(t('errors.invalidEmailAddress')),
+  password: z.string().min(1, t('errors.passwordRequired')),
 })
 
-export type LoginRequest = z.infer<typeof LoginRequestSchema>
+export type LoginRequest = {
+  email: string
+  password: string
+}
 
 export const LoginResponseSchema = z.object({
   user: UserSchema,

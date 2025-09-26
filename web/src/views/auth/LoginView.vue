@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
+import { useI18n } from 'vue-i18n'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -15,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { login } from '@/services/authService'
-import { LoginRequestSchema, type LoginRequest } from '@/schema/auth'
+import { CreateLoginRequestSchema, type LoginRequest } from '@/schema/auth'
 import { Loader2 } from 'lucide-vue-next'
 import FormError from '@/components/FormError.vue'
 
@@ -23,10 +24,11 @@ import lightLogoImage from '@/assets/images/logo/light-logo.png'
 
 
 const router = useRouter()
+const { t } = useI18n()
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
 
-const formSchema = toTypedSchema(LoginRequestSchema)
+const formSchema = toTypedSchema(CreateLoginRequestSchema(t))
 
 const form = useForm({
   validationSchema: formSchema,
@@ -44,7 +46,7 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
     // Redirect to home page on successful login
     await router.push('/dashboard')
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Login failed. Please try again.'
+    errorMessage.value = error instanceof Error ? error.message : t('errors.loginFailed')
   } finally {
     isLoading.value = false
   }
@@ -61,11 +63,11 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
               class="relative hidden md:flex flex-col gap-1 items-center justify-center bg-muted dark:bg-muted/45 rounded-l-xl">
               <img :src="lightLogoImage" alt="adCentra.ai" class="w-20 h-20 mb-2" />
               <h1 class="text-2xl font-semibold">AdCentra</h1>
-              <p class="text-sm text-center text-muted-foreground">Programmatic ad booking made easy.</p>
+              <p class="text-sm text-center text-muted-foreground">{{ t('brand.tagline') }}</p>
             </div>
             <form @submit="onSubmit" class="p-6 md:p-8">
               <div class="flex flex-col gap-6">
-                <span class="text-2xl text-center font-semibold my-2 hidden md:block">Welcome back</span>
+                <span class="text-2xl text-center font-semibold my-2 hidden md:block">{{ t('auth.welcomeBack') }}</span>
                 <div class="flex flex-row gap-2 items-center justify-center md:hidden my-2">
                   <img :src="lightLogoImage" alt="adCentra.ai" class="w-6 h-6" />
                   <h1 class="text-xl font-semibold">AdCentra</h1>
@@ -75,18 +77,20 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
 
                 <FormField v-slot="{ componentField }" name="email">
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{{ t('auth.email') }}</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="Email" :disabled="isLoading" v-bind="componentField" />
+                      <Input type="email" :placeholder="t('auth.email')" :disabled="isLoading"
+                        v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
                 <FormField v-slot="{ componentField }" name="password">
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{{ t('auth.password') }}</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Password" :disabled="isLoading" v-bind="componentField" />
+                      <Input type="password" :placeholder="t('auth.password')" :disabled="isLoading"
+                        v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -95,16 +99,16 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
                   :class="{ 'cursor-pointer': !isLoading, 'cursor-not-allowed': isLoading }">
                   <template v-if="isLoading">
                     <Loader2 v-if="isLoading" class="animate-spin" />
-                    Signing in...
+                    {{ t('auth.signingIn') }}
                   </template>
                   <template v-else>
-                    Sign in
+                    {{ t('auth.signin') }}
                   </template>
                 </Button>
                 <div class="text-center text-sm mt-2">
-                  Don't have an account?
+                  {{ t('auth.dontHaveAccount') }}
                   <a href="/signup" class="underline underline-offset-4">
-                    Sign up
+                    {{ t('auth.signup') }}
                   </a>
                 </div>
               </div>
@@ -113,8 +117,8 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
         </Card>
         <div
           class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a>
-          and <a href="#">Privacy Policy</a>.
+          {{ t('auth.byClickingContinue') }} <a href="#">{{ t('auth.termsOfService') }}</a>
+          {{ t('auth.and') }} <a href="#">{{ t('auth.privacyPolicy') }}</a>.
         </div>
       </div>
     </div>
