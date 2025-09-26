@@ -30,7 +30,7 @@ type User struct {
 	Email           string             `json:"email,omitzero"`
 	ProfileImageURL pgtype.Text        `json:"profile_image_url,omitzero"`
 	Password        password           `json:"-"`
-	Activated       bool               `json:"activated,omitzero"`
+	Activated       bool               `json:"activated"`
 	Version         int32              `json:"-"`
 	LastLoginAt     pgtype.Timestamptz `json:"last_login_at,omitzero"`
 }

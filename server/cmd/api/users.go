@@ -71,8 +71,42 @@ func (app *application) registerUser(e echo.Context) error {
 		}
 	})
 
-	return e.JSON(http.StatusAccepted, echo.Map{
-		"user": user,
+	// Log the user in
+	refreshToken, err := app.models.Tokens.New(ctx, user.ID, refreshTokenTTL, data.ScopeRefresh)
+	if err != nil {
+		return app.serverErrorResponse(e, err)
+	}
+
+	authToken, err := app.models.Tokens.New(ctx, user.ID, authTokenTTL, data.ScopeAuthentication)
+	if err != nil {
+		return app.serverErrorResponse(e, err)
+	}
+
+	user.LastLoginAt.Time = time.Now()
+	user.LastLoginAt.Valid = true
+	err = app.models.Users.Update(ctx, user)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			return app.editConflictResponse()
+		default:
+			return app.serverErrorResponse(e, err)
+		}
+	}
+
+	e.SetCookie(&http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken.Plaintext,
+		Expires:  refreshToken.Expiry.Time,
+		Path:     "/v1/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	return e.JSON(http.StatusCreated, echo.Map{
+		"authentication_token": authToken,
+		"user":                 user,
 	})
 }
 

@@ -55,7 +55,7 @@ func (app *application) routes() *echo.Echo {
 	g.POST("/tokens/activation", app.createActivationToken)
 	g.POST("/tokens/password-reset", app.createPasswordResetToken)
 
-	a := g.Group("", app.requireAuthentication, app.requireActivation)
+	a := g.Group("", app.requireAuthentication)
 	a.GET("/me", app.getCurrentUser)
 	a.DELETE("/tokens/authentication", app.deleteAuthenticationToken)
 
