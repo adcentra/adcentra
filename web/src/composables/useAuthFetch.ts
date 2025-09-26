@@ -9,7 +9,7 @@ import { toast } from 'vue-sonner'
 import i18n from '@/i18n'
 import dayjs from 'dayjs'
 
-const { t } = i18n.global
+const { t, locale } = i18n.global
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5500/v1'
 
@@ -18,13 +18,19 @@ export const useAuthFetch = createFetch({
   baseUrl: API_BASE_URL,
   options: {
     async beforeFetch({ options, cancel }) {
-      const authStore = useAuthStore()
+      // Add content-type and accept-language headers
+      options.headers = {
+        ...options.headers,
+        'Content-Type': 'application/json',
+        'Accept-Language': locale.value,
+      }
 
       // Convert request body to snake_case if it exists
       if (options.body && typeof options.body === 'string') {
         options.body = JSON.stringify(snakeKeys(JSON.parse(options.body)))
       }
 
+      const authStore = useAuthStore()
       // Add Authorization header if the auth token is valid
       // Not using the computed properties(like isTokenExpired) of authStore because they are
       // evaluated only once when the hook is initialized.
@@ -36,7 +42,6 @@ export const useAuthFetch = createFetch({
         options.headers = {
           ...options.headers,
           Authorization: `Bearer ${authStore.accessToken}`,
-          'Content-Type': 'application/json',
         }
         return { options }
       }
@@ -53,7 +58,6 @@ export const useAuthFetch = createFetch({
           options.headers = {
             ...options.headers,
             Authorization: `Bearer ${authStore.accessToken}`,
-            'Content-Type': 'application/json',
           }
           return { options }
         } catch {
@@ -64,12 +68,6 @@ export const useAuthFetch = createFetch({
           cancel()
           return { options }
         }
-      }
-
-      // For non-authenticated requests, just add content-type
-      options.headers = {
-        ...options.headers,
-        'Content-Type': 'application/json',
       }
 
       return { options }
@@ -111,10 +109,10 @@ export const useAuthFetch = createFetch({
         ) {
           return new Promise((resolve) => {
             refreshToken().then(() => {
+              // Re-assign the Authorization header
               ctx.context.options.headers = {
                 ...ctx.context.options.headers,
                 Authorization: `Bearer ${authStore.accessToken}`,
-                'Content-Type': 'application/json',
               }
               ctx.execute().then(() => {
                 resolve(ctx)
@@ -164,6 +162,7 @@ async function refreshToken(): Promise<void> {
       credentials: 'include', // Include HTTP-only refresh token cookie
       headers: {
         'Content-Type': 'application/json',
+        'Accept-Language': locale.value,
       },
     })
 
