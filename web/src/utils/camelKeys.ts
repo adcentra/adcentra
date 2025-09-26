@@ -1,6 +1,6 @@
 function camelString(str: string) {
-  const s = str.replace(/[-_\s]+(.)?/g, (match, chr) => (chr ? chr.toUpperCase() : ''));
-  return s.slice(0, 1).toLowerCase() + s.slice(1);
+  const s = str.replace(/[-_\s]+(.)?/g, (match, chr) => (chr ? chr.toUpperCase() : ''))
+  return s.slice(0, 1).toLowerCase() + s.slice(1)
 }
 
 // Source: https://github.com/knadh/listmonk/blob/master/frontend/src/utils.js
@@ -11,33 +11,33 @@ function camelString(str: string) {
 // .data.results.*.created_at (array indices become *)
 // testFunc() can examine this key and return true to convert it to camelcase
 // or false to leave it as-is.
-function camelKeys(obj: object, testFunc?: (keyPath: string) => boolean, keys?: string): unknown {
+function camelKeys(obj: object, testFunc?: (keyPath: string) => boolean, keys?: string): object {
   if (obj === null) {
-    return obj;
+    return obj
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((o: object) => camelKeys(o, testFunc, `${keys || ''}.*`));
+    return obj.map((o: object) => camelKeys(o, testFunc, `${keys || ''}.*`))
   }
 
   if (obj.constructor === Object) {
     return Object.keys(obj).reduce((result, key) => {
-      const keyPath = `${keys || ''}.${key}`;
-      let k = key;
+      const keyPath = `${keys || ''}.${key}`
+      let k = key
 
       // If there's no testfunc or if a function is defined and it returns true, convert.
       if (testFunc === undefined || testFunc(keyPath)) {
-        k = camelString(key);
+        k = camelString(key)
       }
 
       return {
         ...result,
         [k]: camelKeys(obj[key as keyof object], testFunc, keyPath),
-      };
-    }, {});
+      }
+    }, {})
   }
 
-  return obj;
+  return obj
 }
 
-export default camelKeys;
+export default camelKeys

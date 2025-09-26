@@ -5,7 +5,8 @@ import dayjs, { type Dayjs } from 'dayjs'
 import type { User } from '@/schema/user'
 
 export const useAuthStore = defineStore(
-  'auth', () => {
+  'auth',
+  () => {
     // State
     // Stored in memory only and not persisted to localStorage for security
     const user = ref<User | null>(null)
@@ -14,7 +15,7 @@ export const useAuthStore = defineStore(
 
     // Getters
     const isAuthenticated = computed(() => !!user.value && !!accessToken.value)
-    
+
     const isTokenExpired = computed(() => {
       if (!tokenExpiresAt.value || !tokenExpiresAt.value.isValid()) return false
       // Add 10 seconds to the current time to account for clock skew
@@ -54,17 +55,17 @@ export const useAuthStore = defineStore(
       user,
       accessToken,
       tokenExpiresAt,
-      
+
       // Getters
       isAuthenticated,
       isTokenExpired,
       isTokenValid,
-      
+
       // Actions
       setAuth,
       setAccessToken,
       clearAuth,
-      updateUser
+      updateUser,
     }
   },
   {
@@ -77,9 +78,8 @@ export const useAuthStore = defineStore(
         if (context.store.user.lastLoginAt && typeof context.store.user.lastLoginAt == 'string') {
           context.store.user.lastLoginAt = dayjs(context.store.user.lastLoginAt)
         }
-        
       },
-      storage: sessionStorage
+      storage: sessionStorage,
     },
-  }
+  },
 )

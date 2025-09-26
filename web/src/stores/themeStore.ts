@@ -1,31 +1,33 @@
-import { ref } from 'vue';
-import { defineStore } from 'pinia';
+import { ref } from 'vue'
+import { defineStore } from 'pinia'
 
-export const useThemeStore = defineStore('themeStore', () => {
+export const useThemeStore = defineStore(
+  'themeStore',
+  () => {
     // State
-    const darkMode = ref<boolean | null>(null);
+    const darkMode = ref<boolean | null>(null)
 
     // Actions
     function initTheme() {
       if (darkMode.value === null) {
-        darkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setDarkMode();
+        darkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+        setDarkMode()
       } else {
-        setDarkMode();
+        setDarkMode()
       }
     }
 
     function toggleDarkMode() {
-      darkMode.value = !darkMode.value;
-      setDarkMode();
+      darkMode.value = !darkMode.value
+      setDarkMode()
     }
 
     function setDarkMode() {
-      const body = document.body;
+      const body = document.body
       if (darkMode.value) {
-        body.classList.add('dark');
+        body.classList.add('dark')
       } else {
-        body.classList.remove('dark');
+        body.classList.remove('dark')
       }
     }
 
@@ -33,11 +35,11 @@ export const useThemeStore = defineStore('themeStore', () => {
       darkMode,
       initTheme,
       toggleDarkMode,
-    };
+    }
   },
   {
     persist: {
       pick: ['darkMode'],
     },
   },
-);
+)

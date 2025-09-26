@@ -55,12 +55,15 @@ onUnmounted(() => {
 <template>
   <div class="bg-[#09080b] min-h-screen">
     <!-- Navbar -->
-    <motion.nav :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :transition="{ duration: 0.6 }" :class="[
-      'fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-4 sm:mx-8 lg:mx-20 mt-4 border-0 border-amber-100/10 rounded-full',
-      scrolled
-        ? 'bg-[#3f2d45]/65 border-[0.5px] backdrop-blur-md shadow-lg'
-        : 'bg-transparent'
-    ]">
+    <motion.nav
+      :initial="{ opacity: 0 }"
+      :animate="{ opacity: 1 }"
+      :transition="{ duration: 0.6 }"
+      :class="[
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-4 sm:mx-8 lg:mx-20 mt-4 border-0 border-amber-100/10 rounded-full',
+        scrolled ? 'bg-[#3f2d45]/65 border-[0.5px] backdrop-blur-md shadow-lg' : 'bg-transparent',
+      ]"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div class="flex items-center justify-between gap-4">
           <!-- Logo -->
@@ -68,15 +71,21 @@ onUnmounted(() => {
             <button @click="scrollToSection('hero')" class="transition-colors">
               <span class="flex items-center gap-2 sm:gap-3">
                 <img :src="lightLogoImage" alt="adCentra" class="w-6 h-6 sm:w-8 sm:h-8" />
-                <span class="text-lg sm:text-xl font-bold text-[#F5F5F5] hover:text-white">AdCentra</span>
+                <span class="text-lg sm:text-xl font-bold text-[#F5F5F5] hover:text-white"
+                  >AdCentra</span
+                >
               </span>
             </button>
           </div>
 
           <!-- Desktop Navigation Links -->
           <div class="hidden lg:flex items-center gap-6 lg:gap-8">
-            <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-              class="text-[#F5F5F5] hover:cursor-pointer hover:font-bold hover:text-fuchsia-200 transition-all duration-200 text-md font-semibold">
+            <button
+              v-for="item in navItems"
+              :key="item.id"
+              @click="scrollToSection(item.id)"
+              class="text-[#F5F5F5] hover:cursor-pointer hover:font-bold hover:text-fuchsia-200 transition-all duration-200 text-md font-semibold"
+            >
               {{ item.name }}
             </button>
           </div>
@@ -86,27 +95,34 @@ onUnmounted(() => {
             <!-- Login Button -->
             <router-link v-if="!isAuthenticated" to="/login">
               <button
-                class="hidden sm:block text-[#F5F5F5] hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 hover:border-white/40 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/5 transition-all duration-200 whitespace-nowrap">
+                class="hidden sm:block text-[#F5F5F5] hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 hover:border-white/40 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/5 transition-all duration-200 whitespace-nowrap"
+              >
                 Login
               </button>
             </router-link>
             <router-link v-else to="/dashboard">
               <button
-                class="hidden sm:block text-[#F5F5F5] hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 hover:border-white/40 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/5 transition-all duration-200 whitespace-nowrap">
+                class="hidden sm:block text-[#F5F5F5] hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 border border-white/20 hover:border-white/40 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/5 transition-all duration-200 whitespace-nowrap"
+              >
                 Go to Dashboard
               </button>
             </router-link>
 
             <!-- CTA Button -->
-            <button v-if="!isAuthenticated" @click="scrollToSection('cta')"
-              class="bg-white text-black px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 whitespace-nowrap">
+            <button
+              v-if="!isAuthenticated"
+              @click="scrollToSection('cta')"
+              class="bg-white text-black px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 whitespace-nowrap"
+            >
               <span class="sm:inline">Get Started →</span>
             </button>
 
             <!-- Mobile Menu Button -->
-            <button @click="mobileMenuOpen = !mobileMenuOpen"
+            <button
+              @click="mobileMenuOpen = !mobileMenuOpen"
               class="lg:hidden p-2 text-[#F5F5F5] hover:text-white transition-colors mobile-menu-container"
-              aria-label="Toggle mobile menu">
+              aria-label="Toggle mobile menu"
+            >
               <X v-if="mobileMenuOpen" class="w-5 h-5" />
               <Menu v-else class="w-5 h-5" />
             </button>
@@ -116,24 +132,38 @@ onUnmounted(() => {
     </motion.nav>
 
     <!-- Mobile Menu Overlay -->
-    <motion.div v-if="mobileMenuOpen" :initial="{ opacity: 0, y: -20 }" :animate="{ opacity: 1, y: 0 }"
-      :exit="{ opacity: 0, y: -20 }" :transition="{ duration: 0.2 }" class="fixed top-20 left-4 right-4 z-40 lg:hidden">
-      <div class="bg-[#3f2d45]/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl mobile-menu-container">
+    <motion.div
+      v-if="mobileMenuOpen"
+      :initial="{ opacity: 0, y: -20 }"
+      :animate="{ opacity: 1, y: 0 }"
+      :exit="{ opacity: 0, y: -20 }"
+      :transition="{ duration: 0.2 }"
+      class="fixed top-20 left-4 right-4 z-40 lg:hidden"
+    >
+      <div
+        class="bg-[#3f2d45]/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl mobile-menu-container"
+      >
         <div class="py-4">
-          <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-            class="block w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold">
+          <button
+            v-for="item in navItems"
+            :key="item.id"
+            @click="scrollToSection(item.id)"
+            class="block w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold"
+          >
             {{ item.name }}
           </button>
           <div class="border-t border-white/10 mt-2 pt-2">
             <router-link v-if="!isAuthenticated" to="/login">
               <button
-                class="block w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold">
+                class="block w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold"
+              >
                 Login
               </button>
             </router-link>
             <router-link v-else to="/dashboard">
               <button
-                class="flex items-center gap-4 w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold">
+                class="flex items-center gap-4 w-full px-6 py-3 text-left text-[#F5F5F5] hover:text-fuchsia-200 hover:bg-white/5 transition-all duration-200 text-lg font-semibold"
+              >
                 Go to Dashboard
                 <ArrowRight class="w-5 h-5" />
               </button>

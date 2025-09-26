@@ -1,4 +1,4 @@
-import camelKeys from './camelKeys';
-import generateProfileIcon from './generateProfileIcon';
+import camelKeys from './camelKeys'
+import generateProfileIcon from './generateProfileIcon'
 
-export { camelKeys, generateProfileIcon };
+export { camelKeys, generateProfileIcon }

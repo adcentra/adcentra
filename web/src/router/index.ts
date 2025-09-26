@@ -1,11 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import DashboardView from '@/views/DashboardView.vue';
-import MarketingView from '@/views/MarketingView.vue';
-import NotFoundView from '@/views/NotFoundView.vue';
-import LoginView from '@/views/auth/LoginView.vue';
-import MarketingLayout from '@/layouts/MarketingLayout.vue';
-import { useAuthStore } from '@/stores/authStore';
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
+import { createRouter, createWebHistory } from 'vue-router'
+import DashboardView from '@/views/DashboardView.vue'
+import MarketingView from '@/views/MarketingView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import LoginView from '@/views/auth/LoginView.vue'
+import SignupView from '@/views/auth/SignupView.vue'
+import MarketingLayout from '@/layouts/MarketingLayout.vue'
+import { useAuthStore } from '@/stores/authStore'
+import DashboardLayout from '@/layouts/DashboardLayout.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -46,22 +47,30 @@ const router = createRouter({
         guestOnly: true,
       },
       component: LoginView,
-    }
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      meta: {
+        guestOnly: true,
+      },
+      component: SignupView,
+    },
   ],
-});
+})
 
 router.beforeEach((to) => {
   if (to.matched.length === 0) {
-    return { name: 'not-found' };
+    return { name: 'not-found' }
   }
 
-  const authStore = useAuthStore();
+  const authStore = useAuthStore()
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    return { name: 'login' };
+    return { name: 'login' }
   } else if (to.meta.guestOnly && authStore.isAuthenticated) {
-    return { name: 'dashboard' };
+    return { name: 'dashboard' }
   } else {
-    return true;
+    return true
   }
-});
-export default router;
+})
+export default router

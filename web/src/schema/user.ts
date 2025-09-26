@@ -7,13 +7,16 @@ export const UserSchema = z.object({
   email: z.string(),
   profileImageUrl: z.string().optional(),
   activated: z.boolean(),
-  lastLoginAt: z.string().optional().transform((val) => val ? dayjs(val) : undefined),
+  lastLoginAt: z
+    .string()
+    .optional()
+    .transform((val) => (val ? dayjs(val) : undefined)),
 })
 
 export type User = z.infer<typeof UserSchema>
 
 export const GetCurrentUserResponseSchema = z.object({
-  user: UserSchema
+  user: UserSchema,
 })
 
 export type GetCurrentUserResponse = z.infer<typeof GetCurrentUserResponseSchema>

@@ -2,8 +2,13 @@ import { createFetch } from '@vueuse/core'
 import { useAuthStore } from '@/stores/authStore'
 import type { ApiResponse, ApiError } from '@/schema/api'
 import camelKeys from '@/utils/camelKeys'
+import snakeKeys from '@/utils/snakeKeys'
 import router from '@/router'
 import { RefreshTokenResponseSchema } from '@/schema/auth'
+import { toast } from 'vue-sonner'
+import i18n from '@/i18n'
+
+const { t } = i18n.global
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5500/v1'
 
@@ -14,12 +19,17 @@ export const useAuthFetch = createFetch({
     async beforeFetch({ options, cancel }) {
       const authStore = useAuthStore()
 
+      // Convert request body to snake_case if it exists
+      if (options.body && typeof options.body === 'string') {
+        options.body = JSON.stringify(snakeKeys(JSON.parse(options.body)))
+      }
+
       // Add Authorization header if the auth token is valid
       if (authStore.isTokenValid) {
         options.headers = {
           ...options.headers,
-          'Authorization': `Bearer ${authStore.accessToken}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${authStore.accessToken}`,
+          'Content-Type': 'application/json',
         }
         return { options }
       }
@@ -28,16 +38,18 @@ export const useAuthFetch = createFetch({
       if (authStore.isAuthenticated && authStore.isTokenExpired) {
         try {
           await refreshToken()
-          
+
           options.headers = {
             ...options.headers,
-            'Authorization': `Bearer ${authStore.accessToken}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${authStore.accessToken}`,
+            'Content-Type': 'application/json',
           }
           return { options }
         } catch {
           // If refresh fails, clear auth and cancel the request
+          toast.error(t('errors.failedToRefreshToken'))
           authStore.clearAuth()
+          router.push('/login')
           cancel()
           return { options }
         }
@@ -46,39 +58,46 @@ export const useAuthFetch = createFetch({
       // For non-authenticated requests, just add content-type
       options.headers = {
         ...options.headers,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }
 
       return { options }
     },
-    
+
     afterFetch(ctx) {
-      let data;
+      let data
       if (ctx.data) {
         data = camelKeys(ctx.data)
       }
 
       const response: ApiResponse = {
         data: data,
-        status: ctx.response?.status
+        status: ctx.response?.status,
       }
-      
+
       ctx.data = response
       return ctx
     },
 
     onFetchError(ctx) {
-      const authStore = useAuthStore()
+      // Check if this is a network error (no response received)
+      if (!ctx.response) {
+        ctx.error = {
+          message: t('errors.networkError'),
+        } as ApiError
+        return ctx
+      }
 
       if (ctx.response?.status === 401) {
+        const authStore = useAuthStore()
         // If the token is expired, try to refresh it
         if (authStore.isAuthenticated && authStore.isTokenExpired) {
           return new Promise((resolve) => {
             refreshToken().then(() => {
               ctx.context.options.headers = {
                 ...ctx.context.options.headers,
-                'Authorization': `Bearer ${authStore.accessToken}`,
-                'Content-Type': 'application/json'
+                Authorization: `Bearer ${authStore.accessToken}`,
+                'Content-Type': 'application/json',
               }
               ctx.execute().then(() => {
                 resolve(ctx)
@@ -87,54 +106,52 @@ export const useAuthFetch = createFetch({
           })
         }
 
+        toast.error(t('errors.unauthorizedAccess'))
         authStore.clearAuth()
         router.push('/login')
       }
 
-      // Check if this is a network error (no response received)
-      if (!ctx.response) {
+      if (!ctx.data) {
         ctx.error = {
-          message: 'Network error. Please check your internet connection and try again.',
+          message: t('errors.somethingWentWrong'),
         } as ApiError
         return ctx
       }
 
-      let fieldErrors: Record<string, string> | undefined = undefined
-      if (ctx.data?.fieldErrors) {
-        fieldErrors = camelKeys(ctx.data.fieldErrors) as Record<string, string>
-      }
+      // Error returned from the server
+      const data = camelKeys(ctx.data) as { message?: string; fieldErrors?: Record<string, string> }
 
       const apiError: ApiError = {
         status: ctx.response?.status,
-        message: ctx.data?.message || 'An error occurred',
-        fieldErrors: fieldErrors
+        message: data?.message || t('errors.somethingWentWrong'),
+        fieldErrors: data?.fieldErrors,
       }
 
       ctx.error = apiError
       return ctx
-    }
+    },
   },
   fetchOptions: {
     mode: 'cors',
-  }
+    credentials: 'include',
+  },
 })
-
 
 async function refreshToken(): Promise<void> {
   const authStore = useAuthStore()
-  
+
   try {
     // Use native fetch for the refresh call to avoid circular dependency
     const response = await fetch(`${API_BASE_URL}/tokens/refresh`, {
       method: 'POST',
       credentials: 'include', // Include HTTP-only refresh token cookie
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
 
     if (!response.ok) {
-      throw new Error('Failed to refresh token')
+      throw new Error(t('errors.failedToRefreshToken'))
     }
 
     const rawData = await response.json()
@@ -144,7 +161,7 @@ async function refreshToken(): Promise<void> {
     if (data.authenticationToken) {
       authStore.setAuth(data.user, data.authenticationToken)
     } else {
-      throw new Error('No token received from refresh endpoint')
+      throw new Error(t('errors.failedToRefreshToken'))
     }
   } catch (error) {
     // If refresh fails, clear the auth state
