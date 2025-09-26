@@ -17,7 +17,7 @@ export const useAuthStore = defineStore(
     const isAuthenticated = computed(() => !!user.value && !!accessToken.value)
 
     const isTokenExpired = computed(() => {
-      if (!tokenExpiresAt.value || !tokenExpiresAt.value.isValid()) return false
+      if (!tokenExpiresAt.value || !tokenExpiresAt.value.isValid()) return true
       // Add 10 seconds to the current time to account for clock skew
       return tokenExpiresAt.value.isBefore(dayjs().add(10, 'seconds'))
     })

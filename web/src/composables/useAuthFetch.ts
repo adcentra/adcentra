@@ -7,6 +7,7 @@ import router from '@/router'
 import { RefreshTokenResponseSchema } from '@/schema/auth'
 import { toast } from 'vue-sonner'
 import i18n from '@/i18n'
+import dayjs from 'dayjs'
 
 const { t } = i18n.global
 
@@ -25,7 +26,13 @@ export const useAuthFetch = createFetch({
       }
 
       // Add Authorization header if the auth token is valid
-      if (authStore.isTokenValid) {
+      // Not using the computed properties(like isTokenExpired) of authStore because they are
+      // evaluated only once when the hook is initialized.
+      if (
+        !!authStore.accessToken &&
+        !!authStore.tokenExpiresAt &&
+        authStore.tokenExpiresAt.isAfter(dayjs().add(10, 'seconds'))
+      ) {
         options.headers = {
           ...options.headers,
           Authorization: `Bearer ${authStore.accessToken}`,
@@ -35,7 +42,11 @@ export const useAuthFetch = createFetch({
       }
 
       // If token is expired, try to refresh it
-      if (authStore.isAuthenticated && authStore.isTokenExpired) {
+      if (
+        !!authStore.accessToken &&
+        !!authStore.tokenExpiresAt &&
+        authStore.tokenExpiresAt.isBefore(dayjs().add(10, 'seconds'))
+      ) {
         try {
           await refreshToken()
 
@@ -91,7 +102,13 @@ export const useAuthFetch = createFetch({
       if (ctx.response?.status === 401) {
         const authStore = useAuthStore()
         // If the token is expired, try to refresh it
-        if (authStore.isAuthenticated && authStore.isTokenExpired) {
+        // Not using the computed properties(like isTokenExpired) of authStore because they are
+        // evaluated only once when the hook is initialized.
+        if (
+          !!authStore.accessToken &&
+          !!authStore.tokenExpiresAt &&
+          authStore.tokenExpiresAt.isBefore(dayjs().add(10, 'seconds'))
+        ) {
           return new Promise((resolve) => {
             refreshToken().then(() => {
               ctx.context.options.headers = {
