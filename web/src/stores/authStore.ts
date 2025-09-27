@@ -26,6 +26,10 @@ export const useAuthStore = defineStore(
       return isAuthenticated.value && !isTokenExpired.value
     })
 
+    const isActivated = computed(() => {
+      return isAuthenticated.value && user.value?.activated
+    })
+
     // Actions
     function setAuth(userData: User, authToken: AuthToken) {
       user.value = userData
@@ -60,6 +64,7 @@ export const useAuthStore = defineStore(
       isAuthenticated,
       isTokenExpired,
       isTokenValid,
+      isActivated,
 
       // Actions
       setAuth,

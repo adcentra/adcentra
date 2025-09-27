@@ -36,7 +36,7 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
 
 export async function logout(scope: 'local' | 'global' | 'others' = 'local') {
   try {
-    await useAuthFetch(`/tokens/authentication?scope=${scope}`).delete().json()
+    await useAuthFetch(`/tokens/authentication?scope=${scope}`).delete()
   } catch (error) {
     console.warn('Logout API call failed:', error)
     throw new ServiceError(t('errors.somethingWentWrong'))
@@ -85,8 +85,10 @@ export async function register(userData: {
   }
 }
 
-export async function activateAccount(token: string): Promise<string> {
-  const { data, error } = await useAuthFetch('/users/activation').put({ token }).json<ApiResponse>()
+export async function requestActivationToken(email: string): Promise<string> {
+  const { data, error } = await useAuthFetch('/tokens/activation')
+    .post({ email })
+    .json<ApiResponse>()
 
   if (error.value) {
     throw new ServiceError(
@@ -101,6 +103,17 @@ export async function activateAccount(token: string): Promise<string> {
   } catch (error) {
     console.error('Failed to parse the response:', error)
     throw new ServiceError(t('errors.somethingWentWrong'))
+  }
+}
+
+export async function activateAccount(token: string): Promise<void> {
+  const { error } = await useAuthFetch('/users/activate').put({ token })
+
+  if (error.value) {
+    throw new ServiceError(
+      (error.value as ApiError)?.message,
+      (error.value as ApiError)?.fieldErrors,
+    )
   }
 }
 

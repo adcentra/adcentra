@@ -64,3 +64,9 @@ export const RegisterResponseSchema = z.object({
 })
 
 export type RegisterResponse = z.infer<typeof RegisterResponseSchema>
+
+export const ActivateAccountRequestSchema = z.object({
+  token: z.string().min(1, t('auth.activationTokenRequired')),
+})
+
+export type ActivateAccountRequest = z.infer<typeof ActivateAccountRequestSchema>

@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { login } from '@/services/authService'
 import { LoginRequestSchema, type LoginRequest } from '@/schema/auth'
 import { Loader2 } from 'lucide-vue-next'
-import FormError from '@/components/FormError.vue'
+import FormBanner from '@/components/FormBanner.vue'
 
 import lightLogoImage from '@/assets/images/logo/light-logo.png'
 import type ServiceError from '@/services/serviceError'
@@ -60,7 +60,7 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
   <div class="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
     <div class="w-full max-w-sm md:max-w-3xl">
       <div class="flex flex-col gap-6">
-        <Card class="overflow-hidde py-0">
+        <Card class="overflow-hidden py-0">
           <CardContent class="grid p-0 md:grid-cols-2">
             <div
               class="relative hidden md:flex flex-col gap-1 items-center justify-center bg-muted dark:bg-muted/45 rounded-l-xl"
@@ -79,7 +79,7 @@ const onSubmit = form.handleSubmit(async (values: LoginRequest) => {
                   <h1 class="text-xl font-semibold">AdCentra</h1>
                 </div>
 
-                <FormError :errorMessage />
+                <FormBanner :message="errorMessage" type="error" />
 
                 <FormField v-slot="{ componentField }" name="email">
                   <FormItem>

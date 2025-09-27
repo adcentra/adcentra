@@ -126,6 +126,8 @@ export const useAuthFetch = createFetch({
         router.push('/login')
       }
 
+      console.error(ctx.error)
+
       if (!ctx.data) {
         ctx.error = {
           message: t('errors.somethingWentWrong'),

@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { register } from '@/services/authService'
 import { RegisterRequestSchema, type RegisterRequest } from '@/schema/auth'
 import { Loader2 } from 'lucide-vue-next'
-import FormError from '@/components/FormError.vue'
+import FormBanner from '@/components/FormBanner.vue'
 
 import lightLogoImage from '@/assets/images/logo/light-logo.png'
 import ServiceError from '@/services/serviceError'
@@ -41,7 +41,7 @@ const onSubmit = form.handleSubmit(async (values: RegisterRequest) => {
     authStore.setAuth(registerResponse.user, registerResponse.authenticationToken)
 
     // Redirect to home page on successful login
-    await router.push('/dashboard')
+    await router.push('/activate')
   } catch (error) {
     const serviceError = error as ServiceError
     errorMessage.value = serviceError.message
@@ -82,7 +82,7 @@ const onSubmit = form.handleSubmit(async (values: RegisterRequest) => {
                   <h1 class="text-xl font-semibold">AdCentra</h1>
                 </div>
 
-                <FormError :errorMessage />
+                <FormBanner :message="errorMessage" type="error" />
 
                 <FormField v-slot="{ componentField }" name="fullName">
                   <FormItem>

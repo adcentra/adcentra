@@ -4,6 +4,7 @@ import MarketingView from '@/views/MarketingView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
 import SignupView from '@/views/auth/SignupView.vue'
+import ActivateView from '@/views/auth/ActivateView.vue'
 import MarketingLayout from '@/layouts/MarketingLayout.vue'
 import { useAuthStore } from '@/stores/authStore'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
@@ -30,7 +31,7 @@ const router = createRouter({
       path: '/dashboard',
       component: DashboardLayout,
       meta: {
-        requiresAuth: true,
+        requiresActivation: true,
       },
       children: [
         {
@@ -56,6 +57,14 @@ const router = createRouter({
       },
       component: SignupView,
     },
+    {
+      path: '/activate',
+      name: 'activate',
+      meta: {
+        inactiveOnly: true,
+      },
+      component: ActivateView,
+    },
   ],
 })
 
@@ -68,6 +77,10 @@ router.beforeEach((to) => {
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return { name: 'login' }
   } else if (to.meta.guestOnly && authStore.isAuthenticated) {
+    return { name: 'dashboard' }
+  } else if (to.meta.requiresActivation && !authStore.isActivated) {
+    return { name: 'activate' }
+  } else if (to.meta.inactiveOnly && authStore.isActivated) {
     return { name: 'dashboard' }
   } else {
     return true
