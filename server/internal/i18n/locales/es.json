@@ -5,7 +5,7 @@
   },
   {
     "id": "ValidationError",
-    "translation": "Los datos que proporcionó no son válidos, por favor corrija los errores e intente nuevamente."
+    "translation": "Comprueba tus entradas y vuelve a intentarlo"
   },
   {
     "id": "BadRequest",

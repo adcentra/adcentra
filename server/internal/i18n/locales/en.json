@@ -5,7 +5,7 @@
   },
   {
     "id": "ValidationError",
-    "translation": "The data you provided is invalid, please fix the errors and try again."
+    "translation": "Check your inputs and try again."
   },
   {
     "id": "BadRequest",
